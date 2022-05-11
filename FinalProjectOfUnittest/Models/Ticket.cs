@@ -9,15 +9,17 @@
         public DateTime Created { get; set; }
         public DateTime Updated { get; set; }
         public int ProjectId { get; set; }
-
-        public int TicketTypeId { get; set; }
-        public int TicketPriorityId { get; set; }
-
-        public int TicketStatusId { get; set; }
+        public Project Project { get; set; }
+        public string TicketType { get; set; }
+        
+        public string TicketPriority{ get; set; }
+        
+        public string TicketStatus { get; set; }
+        
         public string OwnerUserId { get; set; }
-
+        public AppUser OwnerUser { get; set; }
         public string AssignedToUserId { get; set; }
-
+        public AppUser AssignedToUser { get; set; } 
         public ICollection<TicketAttachment> TicketAttachments { get; set; }
         public ICollection<TicketComment> TicketComments { get; set; }
         public ICollection<TicketHistory> TicketHistories { get; set;}
@@ -35,18 +37,26 @@
 
     public enum TicketStatus
     {
-
+        Submitted,
+        Asssigned,
+        Progressing,
+        Resorved
     }
 
     public enum TicketPriorities
     {
-
+        High,
+        Medium,
+        Low
     }
 
     public enum TicketTypes
     { 
-
-
+        GeneralQuestion,
+        BugReport,
+        PaymentIssue,
+        TechIssue,
+        AccountIssue
     }
 
 

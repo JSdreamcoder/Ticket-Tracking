@@ -6,6 +6,7 @@
         public int ProjectId { get; set; }
         public Project Prject { get; set; }
         public string UserId { get; set; }
+        public AppUser User { get; set; }
 
     }
 }

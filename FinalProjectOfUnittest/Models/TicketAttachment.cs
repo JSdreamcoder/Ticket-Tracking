@@ -11,6 +11,7 @@
         public DateTime Created { get; set; }
 
         public string UserId { get; set; }
+        public AppUser User { get; set; }
         public string FileUrl { get; set; }
 
         public int TicketId { get; set; }
