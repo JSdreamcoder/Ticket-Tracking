@@ -11,10 +11,10 @@
         public DateTime Created { get; set; }
 
         public string UserId { get; set; }
-        public AppUser User { get; set; }
+        public AppUser? User { get; set; }
         public string FileUrl { get; set; }
 
         public int TicketId { get; set; }
-        public Ticket ticket { get; set; }
+        public Ticket? ticket { get; set; }
     }
 }

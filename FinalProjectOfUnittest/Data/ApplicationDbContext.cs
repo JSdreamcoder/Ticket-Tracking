@@ -10,7 +10,15 @@ namespace FinalProjectOfUnittest.Data
             : base(options)
         {
         }
-        
+        public DbSet<AppUser> User { get; set; }
+        public DbSet<Project> Project { get; set; }
+        public DbSet<ProjectUser> ProjectUser { get; set; }
+        public DbSet<Ticket> Ticket { get; set; }
+        public DbSet<TicketAttachment> TicketAttachment { get; set; }
+        public DbSet<TicketComment> TicketComment { get; set; }
+        public DbSet<TicketHistory> TicketHistory { get; set; }
+        public DbSet<TicketNotification> TicketNotification { get; set; }
+
     }
    
 }

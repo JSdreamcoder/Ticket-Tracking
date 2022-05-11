@@ -9,10 +9,11 @@ namespace FinalProjectOfUnittest.Models
         public ICollection<TicketComment> TicketComments { get; set; }
         public ICollection<TicketHistory> TicketHistories { get; set; }
         public ICollection<TicketNotification> TicketNotifications { get; set; }
-        [InverseProperty("OwnerUserId")]
-        public ICollection<Ticket> OwnerTicket { get; set; }
-        [InverseProperty("AssignedToUserId")]
+        [InverseProperty("AssignedToUser")]
         public ICollection<Ticket> AssignedTicket { get; set; }
+        [InverseProperty("OwnerUser")]
+        public ICollection<Ticket> OwnerTicket { get; set; }
+       
         public ICollection<ProjectUser> ProjectUsers { get; set; }
         public AppUser()
         {
@@ -21,7 +22,7 @@ namespace FinalProjectOfUnittest.Models
             TicketHistories = new HashSet<TicketHistory>();
             TicketNotifications = new HashSet<TicketNotification>();
             OwnerTicket = new HashSet<Ticket>();
-            AssignedTicket = new HashSet<Ticket>();
+            //AssignedTicket = new HashSet<Ticket>();
             ProjectUsers = new HashSet<ProjectUser>();
         }
     }
