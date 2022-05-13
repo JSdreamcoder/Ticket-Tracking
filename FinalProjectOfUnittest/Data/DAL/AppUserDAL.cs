@@ -17,7 +17,7 @@ namespace FinalProjectOfUnittest.Data.DAL
         }
 
         //Read
-        public AppUser Get(String id)
+        public AppUser GetbyId(string id)
         {
             return Context.AppUser.First(a => a.Id == id);
         }

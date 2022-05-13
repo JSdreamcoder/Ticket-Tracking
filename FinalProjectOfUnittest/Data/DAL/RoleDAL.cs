@@ -38,7 +38,7 @@ namespace FinalProjectOfUnittest.Data.DAL
         //Update
         public void Update(IdentityRole a)
         {
-            Context.IdentityRole.Update(a);
+            RoleManager
         }
 
         public void Delete(IdentityRole a)
