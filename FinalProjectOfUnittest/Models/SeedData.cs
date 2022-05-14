@@ -87,10 +87,10 @@ namespace FinalProjectOfUnittest.Models
                 await userManager.AddToRoleAsync(user3, "Developer");
 
                 var passwordHasher4 = new PasswordHasher<AppUser>();
-                var hasedPassword4 = passwordHasher3.HashPassword(user3, "P@ssword1");
-                user3.PasswordHash = hasedPassword3;
-                await userManager.CreateAsync(user3);
-                await userManager.AddToRoleAsync(user3, "Submitter");
+                var hasedPassword4 = passwordHasher4.HashPassword(user4, "P@ssword1");
+                user4.PasswordHash = hasedPassword4;
+                await userManager.CreateAsync(user4);
+                await userManager.AddToRoleAsync(user4, "Submitter");
             }
             context.SaveChanges();
 
