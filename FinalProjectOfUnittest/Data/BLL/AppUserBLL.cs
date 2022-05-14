@@ -16,5 +16,10 @@ namespace FinalProjectOfUnittest.Data.BLL
             return AppUserDAL.GetbyId(Id);
         }
 
+        public ICollection<AppUser> GetAllUsers()
+        {
+            return AppUserDAL.GetAll();
+        }
+
     }
 }
