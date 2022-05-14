@@ -38,9 +38,9 @@
     public enum TicketStatus
     {
         Submitted,
-        Asssigned,
+        Assigned,
         Progressing,
-        Resorved
+        Completed
     }
 
     public enum TicketPriorities
@@ -54,7 +54,7 @@
     { 
         GeneralQuestion,
         BugReport,
-        PaymentIssue,
+        Payment,
         TechIssue,
         AccountIssue
     }

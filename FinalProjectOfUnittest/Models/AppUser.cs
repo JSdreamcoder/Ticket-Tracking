@@ -22,7 +22,7 @@ namespace FinalProjectOfUnittest.Models
             TicketHistories = new HashSet<TicketHistory>();
             TicketNotifications = new HashSet<TicketNotification>();
             OwnerTicket = new HashSet<Ticket>();
-            //AssignedTicket = new HashSet<Ticket>();
+            AssignedTicket = new HashSet<Ticket>();
             ProjectUsers = new HashSet<ProjectUser>();
         }
     }
