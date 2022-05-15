@@ -6,7 +6,7 @@
         public string Name { get; set; }
 
         ICollection<ProjectUser> ProjectUsers { get; set; }
-        Project()
+        public Project()
         {
             ProjectUsers = new HashSet<ProjectUser>();
         }

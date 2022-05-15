@@ -38,12 +38,12 @@ namespace FinalProjectOfUnittest.Data.DAL
         //Update
         public void Update(IdentityRole a)
         {
-            RoleManager
+            Context.Update(a);
         }
 
         public void Delete(IdentityRole a)
         {
-            Context.IdentityRole.Remove(a);
+            Context.Remove(a);
         }
 
         public void Save()

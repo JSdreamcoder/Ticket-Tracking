@@ -50,20 +50,29 @@ namespace FinalProjectOfUnittest.Models
 
                 AppUser user3 = new AppUser()
                 {
-                    Email = "Developer@mitt.ca",
-                    NormalizedEmail = "DEVELOPER@MITT.CA",
-                    UserName = "developer@mitt.ca",
-                    NormalizedUserName = "DEVELOPER@MITT.CA",
+                    Email = "Developer001@mitt.ca",
+                    NormalizedEmail = "DEVELOPER001@MITT.CA",
+                    UserName = "developer001@mitt.ca",
+                    NormalizedUserName = "DEVELOPER001@MITT.CA",
                     EmailConfirmed = true,
                     SecurityStamp = Guid.NewGuid().ToString()
                 };
 
                 AppUser user4 = new AppUser()
                 {
-                    Email = "Submitter@mitt.ca",
-                    NormalizedEmail = "SUBMITTER@MITT.CA",
-                    UserName = "Submitter@mitt.ca",
-                    NormalizedUserName = "SUBMITTER@MITT.CA",
+                    Email = "Jaewon@gmail.com",
+                    NormalizedEmail = "JAEWON@GMAIL.COM",
+                    UserName = "Jaewon@gmail.com",
+                    NormalizedUserName = "JAEWON@GMAIL.COM",
+                    EmailConfirmed = true,
+                    SecurityStamp = Guid.NewGuid().ToString()
+                };
+                AppUser user5 = new AppUser()
+                {
+                    Email = "bob@gmail.com",
+                    NormalizedEmail = "BOB@GMAIL.COM",
+                    UserName = "bob@gmail.com",
+                    NormalizedUserName = "BOB@GMAIL.COM",
                     EmailConfirmed = true,
                     SecurityStamp = Guid.NewGuid().ToString()
                 };
@@ -91,8 +100,39 @@ namespace FinalProjectOfUnittest.Models
                 user4.PasswordHash = hasedPassword4;
                 await userManager.CreateAsync(user4);
                 await userManager.AddToRoleAsync(user4, "Submitter");
+
+                var passwordHasher5 = new PasswordHasher<AppUser>();
+                var hasedPassword5 = passwordHasher5.HashPassword(user5, "P@ssword1");
+                user4.PasswordHash = hasedPassword5;
+                await userManager.CreateAsync(user5);
+                await userManager.AddToRoleAsync(user5, "Submitter");
             }
-            context.SaveChanges();
+            // Seed project
+            if (!context.Project.Any())
+            {
+                Project project1 = new Project();
+                project1.Name = "QnAPage";
+
+                Project project2 = new Project();
+                project1.Name = "TaskManagement";
+            }
+
+            if (!context.Ticket.Any())
+            {
+                Ticket ticket1 = new Ticket();
+                ticket1.Title = "Bug Report Of Answering";
+                ticket1.Description = "I found a Bug When I make new Answer with emty title. After clicking Summit, I got Bad connection error";
+                ticket1.Created = DateTime.Now;
+                ticket1.ProjectId = 1;
+                ticket1.TicketType = TicketTypes.BugReport;
+                ticket1.TicketPriority =  TicketPriorities.High;
+                ticket1.TicketStatus = TicketStatus.Assigned;
+                ticket1.OwnerUserId = context.AppUser.First(u => u.UserName == "Jaewon@gmail.com").Id;
+                ticket1.AssignedToUserId = context.AppUser.First(u => u.UserName == "developer001@mitt.ca").Id;
+
+
+            }
+                context.SaveChanges();
 
 
         }

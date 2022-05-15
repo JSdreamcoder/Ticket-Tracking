@@ -7,14 +7,14 @@
         public string Description { get; set; }
 
         public DateTime Created { get; set; }
-        public DateTime Updated { get; set; }
+        public DateTime? Updated { get; set; }
         public int ProjectId { get; set; }
         public Project? Project { get; set; }
-        public string TicketType { get; set; }
+        public TicketTypes TicketType { get; set; }
         
-        public string TicketPriority{ get; set; }
+        public TicketPriorities TicketPriority{ get; set; }
         
-        public string TicketStatus { get; set; }
+        public TicketStatus TicketStatus { get; set; }
         
         public string? OwnerUserId { get; set; }
         public AppUser? OwnerUser { get; set; }
