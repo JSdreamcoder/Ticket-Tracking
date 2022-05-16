@@ -43,7 +43,7 @@ namespace FinalProjectOfUnittest.Controllers
             {
                Tickets = Tickets.Where(t=>t.Title.ToLower().Contains(searchString.ToLower())).ToList();
             }
-            int pageSize = 1;
+            int pageSize = 10;
             return View(PaginatedList<Ticket>.Create(Tickets,pageNumber ?? 1,pageSize));
         }
 

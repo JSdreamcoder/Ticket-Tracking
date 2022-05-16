@@ -15,10 +15,11 @@ namespace FinalProjectOfUnittest.Controllers
     public class ProjectController : Controller
     {
         private readonly ProjectBLL projectbll;
-
+        private readonly AppUserBLL userbll;
         public ProjectController(ApplicationDbContext context)
         {
             projectbll = new ProjectBLL( new ProjectDAL(context));
+            userbll = new AppUserBLL(new AppUserDAL(context));
         }
 
         // GET: Projects
@@ -117,7 +118,19 @@ namespace FinalProjectOfUnittest.Controllers
             return View(project);
         }
 
-      
+        public async Task<IActionResult> AssignUser(int projectId)
+        {
+            try
+            {
+                var project = projectbll.GetById(projectId);
+                //var alluser
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            return View();
+        }
 
         private bool ProjectExists(int id)
         {

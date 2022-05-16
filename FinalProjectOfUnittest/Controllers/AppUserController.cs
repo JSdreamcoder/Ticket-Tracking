@@ -1,4 +1,6 @@
-﻿using FinalProjectOfUnittest.Data.BLL;
+﻿using FinalProjectOfUnittest.Data;
+using FinalProjectOfUnittest.Data.BLL;
+using FinalProjectOfUnittest.Data.DAL;
 using FinalProjectOfUnittest.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -11,16 +13,17 @@ namespace FinalProjectOfUnittest.Controllers
     {
 
         //make declaration first like last group project, difference is using appuserbll, bll gets data from dal
+        private readonly ApplicationDbContext context;
         private readonly AppUserBLL userbll;
         private readonly UserManager<AppUser> userManager;
         private readonly RoleManager<IdentityRole> roleManager;
         private readonly RoleBLL rolebll;
-        public AppUserController(AppUserBLL ubll, UserManager<AppUser> um, RoleManager<IdentityRole> rm,RoleBLL rbll)
+        public AppUserController(ApplicationDbContext db,UserManager<AppUser> um, RoleManager<IdentityRole> rm)
         {
-            userbll = ubll;
+            userbll = new AppUserBLL(new AppUserDAL(db));
             userManager = um;
             roleManager = rm;
-            rolebll = rbll;
+            rolebll = new RoleBLL(new RoleDAL(db));
         }
         // GET: AppUserController
         public async Task<IActionResult> Index()
@@ -61,6 +64,7 @@ namespace FinalProjectOfUnittest.Controllers
                 ViewBag.User = user;
                 ViewBag.UserRoles = await userManager.GetRolesAsync(user);
                 var selectlistOfRoles = new SelectList(otherRoles, "Name", "Name");
+                
                 return View(selectlistOfRoles);
 
             }
@@ -87,7 +91,19 @@ namespace FinalProjectOfUnittest.Controllers
             }
             return RedirectToAction("Index");
         }
+        public async Task<IActionResult> CreateRole()
+        {
+            try
+            {
+                var allroles = rolebll.GetAllRoles();
+                return View(allroles);
 
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
         [HttpPost]
         public async Task<IActionResult> CreateRole(string rolename)
         {
@@ -162,13 +178,13 @@ namespace FinalProjectOfUnittest.Controllers
             {
                 var user = userbll.GetUserbyId(userid);
                 var roleId = rolebll.Get(r => r.Name == role).Id;
-                userManager.RemoveFromRoleAsync(user, role);
-                
+                await userManager.RemoveFromRoleAsync(user, role);
+                await userManager.UpdateAsync(user);
                 //var userRole = _context.UserRoles.First(ur => ur.UserId == userid && ur.RoleId == roleId);
                 //rolebll.GetAllRoles().Remove(userRole);
 
 
-                rolebll.Save();
+                
                 return RedirectToAction("Index");
 
             }

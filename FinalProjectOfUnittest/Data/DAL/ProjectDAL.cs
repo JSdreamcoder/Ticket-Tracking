@@ -6,6 +6,7 @@ namespace FinalProjectOfUnittest.Data.DAL
     public class ProjectDAL : IDAL<Project>
     {
         public ApplicationDbContext Context { get; set; }
+        
         public ProjectDAL(ApplicationDbContext context)
         {
             Context = context;
@@ -20,21 +21,28 @@ namespace FinalProjectOfUnittest.Data.DAL
         //Read
         public Project Get(int id)
         {
-            var projects = Context.Project.Include(p => p.Tickets);
+            var projects = Context.Project.Include(p => p.Tickets)
+                                          .Include(p=>p.ProjectUsers);
             return projects.First(a => a.Id == id);
         }
         public Project Get(Func<Project, bool> firstFuction)
         {
-            return Context.Project.First(firstFuction);
+            var projects = Context.Project.Include(p => p.Tickets)
+                                          .Include(p => p.ProjectUsers);
+            return projects.First(firstFuction);
             
         }
         public ICollection<Project> GetAll()
         {
-            return Context.Project.ToList();
+            var projects = Context.Project.Include(p => p.Tickets)
+                                          .Include(p => p.ProjectUsers);
+            return projects.ToList();
         }
         public ICollection<Project> GetList(Func<Project, bool> func)
         {
-            return Context.Project.Where(func).ToList();
+            var projects = Context.Project.Include(p => p.Tickets)
+                                          .Include(p => p.ProjectUsers);
+            return projects.Where(func).ToList();
         }
 
         //Update

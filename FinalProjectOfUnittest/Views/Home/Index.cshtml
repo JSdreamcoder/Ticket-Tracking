@@ -8,7 +8,7 @@
 
     @foreach(var project in Model)
     {
-      <li style="color:red;font-size:50px"><a asp-route-projectid=@project.Id asp-route-projectname=@project.Name asp-action="Index" asp-controller="Ticket"  style="text-decoration:none">@project.Name</a></li>  
+      <li style="color:red;font-size:50px"><a asp-route-projectid=@project.Id asp-route-projectname=@project.Name asp-action="Index" asp-controller="Ticket"  style="text-decoration:none">>>@project.Name</a></li>  
     }
     </ul>
 
