@@ -136,8 +136,8 @@ namespace FinalProjectOfUnittest.Models
                 context.Ticket.Add(ticket1);
 
                 Ticket ticket2 = new Ticket();
-                ticket2.Title = "Bug Report Of Answering";
-                ticket2.Description = "When I ask Where is your hometown, it says none.";
+                ticket2.Title = "Jump out App";
+                ticket2.Description = "When I use App for a long time, The App will be Auto jump out.";
                 ticket2.Created = DateTime.Now;
                 ticket2.ProjectId = context.Project.First(p => p.Name == "LanguageAI").Id;
                 ticket2.TicketType = TicketTypes.BugReport;
@@ -148,8 +148,8 @@ namespace FinalProjectOfUnittest.Models
                 context.Ticket.Add(ticket2);
 
                 Ticket ticket3 = new Ticket();
-                ticket3.Title = "Bug Report Of Answering";
-                ticket3.Description = "When I ask Where is your hometown, it says none.";
+                ticket3.Title = "Can't show some information";
+                ticket3.Description = "When I use App for a long time, I will lose some information";
                 ticket3.Created = DateTime.Now;
                 ticket3.ProjectId = context.Project.First(p => p.Name == "LanguageAI").Id;
                 ticket3.TicketType = TicketTypes.BugReport;
@@ -159,7 +159,41 @@ namespace FinalProjectOfUnittest.Models
                 ticket3.AssignedToUserId = context.AppUser.First(u => u.UserName == "developer001@mitt.ca").Id;
                 context.Ticket.Add(ticket3);
 
+                Ticket ticket4 = new Ticket();
+                ticket3.Title = "Bug Report Of Showing";
+                ticket3.Description = "Sometimes the App shows data that isn't what I want to show";
+                ticket3.Created = DateTime.Now;
+                ticket3.ProjectId = context.Project.First(p => p.Name == "CarNavigationAI").Id;
+                ticket3.TicketType = TicketTypes.BugReport;
+                ticket3.TicketPriority = TicketPriorities.High;
+                ticket3.TicketStatus = TicketStatus.Assigned;
+                ticket3.OwnerUserId = context.AppUser.First(u => u.UserName == "bob@gmail.com").Id;
+                ticket3.AssignedToUserId = context.AppUser.First(u => u.UserName == "developer002@mitt.ca").Id;//Qusetion? developer001 :developer002
+                context.Ticket.Add(ticket4);
 
+                Ticket ticket5 = new Ticket();
+                ticket3.Title = "According to the code";
+                ticket3.Description = "When I translate in aother language, it shows grabled characters";
+                ticket3.Created = DateTime.Now;
+                ticket3.ProjectId = context.Project.First(p => p.Name == "CarNavigationAI").Id;
+                ticket3.TicketType = TicketTypes.BugReport;
+                ticket3.TicketPriority = TicketPriorities.High;
+                ticket3.TicketStatus = TicketStatus.Assigned;
+                ticket3.OwnerUserId = context.AppUser.First(u => u.UserName == "bob@gmail.com").Id;
+                ticket3.AssignedToUserId = context.AppUser.First(u => u.UserName == "developer002@mitt.ca").Id;
+                context.Ticket.Add(ticket5);
+
+                Ticket ticket6 = new Ticket();
+                ticket3.Title = "Invalid user name";
+                ticket3.Description = "Sometimes I can't use my user name to log in to the App";
+                ticket3.Created = DateTime.Now;
+                ticket3.ProjectId = context.Project.First(p => p.Name == "CarNavigationAI").Id;
+                ticket3.TicketType = TicketTypes.BugReport;
+                ticket3.TicketPriority = TicketPriorities.High;
+                ticket3.TicketStatus = TicketStatus.Assigned;
+                ticket3.OwnerUserId = context.AppUser.First(u => u.UserName == "bob@gmail.com").Id;
+                ticket3.AssignedToUserId = context.AppUser.First(u => u.UserName == "developer002@mitt.ca").Id;
+                context.Ticket.Add(ticket6);
             }
             context.SaveChanges();
 
