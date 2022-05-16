@@ -76,6 +76,15 @@ namespace FinalProjectOfUnittest.Models
                     EmailConfirmed = true,
                     SecurityStamp = Guid.NewGuid().ToString()
                 };
+                AppUser user6 = new AppUser()
+                {
+                    Email = "Developer002@mitt.ca",
+                    NormalizedEmail = "DEVELOPER002@MITT.CA",
+                    UserName = "developer002@mitt.ca",
+                    NormalizedUserName = "DEVELOPER002@MITT.CA",
+                    EmailConfirmed = true,
+                    SecurityStamp = Guid.NewGuid().ToString()
+                };
 
                 var passwordHasher = new PasswordHasher<AppUser>();
                 var hasedPassword = passwordHasher.HashPassword(user, "P@ssword1");
@@ -106,6 +115,12 @@ namespace FinalProjectOfUnittest.Models
                 user5.PasswordHash = hasedPassword5;
                 await userManager.CreateAsync(user5);
                 await userManager.AddToRoleAsync(user5, "Submitter");
+
+                var passwordHasher6 = new PasswordHasher<AppUser>();
+                var hasedPassword6 = passwordHasher6.HashPassword(user6, "P@ssword1");
+                user6.PasswordHash = hasedPassword6;
+                await userManager.CreateAsync(user6);
+                await userManager.AddToRoleAsync(user6, "Developer");
             }
             context.SaveChanges();
             // Seed project
