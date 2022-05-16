@@ -103,36 +103,65 @@ namespace FinalProjectOfUnittest.Models
 
                 var passwordHasher5 = new PasswordHasher<AppUser>();
                 var hasedPassword5 = passwordHasher5.HashPassword(user5, "P@ssword1");
-                user4.PasswordHash = hasedPassword5;
+                user5.PasswordHash = hasedPassword5;
                 await userManager.CreateAsync(user5);
                 await userManager.AddToRoleAsync(user5, "Submitter");
             }
+            context.SaveChanges();
             // Seed project
             if (!context.Project.Any())
             {
                 Project project1 = new Project();
-                project1.Name = "QnAPage";
+                project1.Name = "LanguageAI";
+                context.Project.Add(project1);
 
                 Project project2 = new Project();
-                project1.Name = "TaskManagement";
+                project2.Name = "CarNavigationAI";
+                context.Project.Add(project2);
             }
+            context.SaveChanges();
 
             if (!context.Ticket.Any())
             {
                 Ticket ticket1 = new Ticket();
                 ticket1.Title = "Bug Report Of Answering";
-                ticket1.Description = "I found a Bug When I make new Answer with emty title. After clicking Summit, I got Bad connection error";
+                ticket1.Description = "When I ask Where is your hometown, it says none.";
                 ticket1.Created = DateTime.Now;
-                ticket1.ProjectId = 1;
+                ticket1.ProjectId = context.Project.First(p=>p.Name== "LanguageAI").Id;
                 ticket1.TicketType = TicketTypes.BugReport;
                 ticket1.TicketPriority =  TicketPriorities.High;
                 ticket1.TicketStatus = TicketStatus.Assigned;
                 ticket1.OwnerUserId = context.AppUser.First(u => u.UserName == "Jaewon@gmail.com").Id;
                 ticket1.AssignedToUserId = context.AppUser.First(u => u.UserName == "developer001@mitt.ca").Id;
+                context.Ticket.Add(ticket1);
+
+                Ticket ticket2 = new Ticket();
+                ticket2.Title = "Bug Report Of Answering";
+                ticket2.Description = "When I ask Where is your hometown, it says none.";
+                ticket2.Created = DateTime.Now;
+                ticket2.ProjectId = context.Project.First(p => p.Name == "LanguageAI").Id;
+                ticket2.TicketType = TicketTypes.BugReport;
+                ticket2.TicketPriority = TicketPriorities.High;
+                ticket2.TicketStatus = TicketStatus.Assigned;
+                ticket2.OwnerUserId = context.AppUser.First(u => u.UserName == "Jaewon@gmail.com").Id;
+                ticket2.AssignedToUserId = context.AppUser.First(u => u.UserName == "developer001@mitt.ca").Id;
+                context.Ticket.Add(ticket2);
+
+                Ticket ticket3 = new Ticket();
+                ticket3.Title = "Bug Report Of Answering";
+                ticket3.Description = "When I ask Where is your hometown, it says none.";
+                ticket3.Created = DateTime.Now;
+                ticket3.ProjectId = context.Project.First(p => p.Name == "LanguageAI").Id;
+                ticket3.TicketType = TicketTypes.BugReport;
+                ticket3.TicketPriority = TicketPriorities.High;
+                ticket3.TicketStatus = TicketStatus.Assigned;
+                ticket3.OwnerUserId = context.AppUser.First(u => u.UserName == "Jaewon@gmail.com").Id;
+                ticket3.AssignedToUserId = context.AppUser.First(u => u.UserName == "developer001@mitt.ca").Id;
+                context.Ticket.Add(ticket3);
 
 
             }
-                context.SaveChanges();
+            context.SaveChanges();
 
 
         }
