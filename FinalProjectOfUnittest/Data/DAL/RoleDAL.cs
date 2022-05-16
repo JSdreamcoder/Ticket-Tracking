@@ -21,6 +21,8 @@ namespace FinalProjectOfUnittest.Data.DAL
         {
             return Context.Roles.First(a => a.Id == id);
         }
+
+        //useding in Role BLL
         public IdentityRole Get(Func<IdentityRole, bool> firstFuction)
         {
             return Context.Roles.First(firstFuction);
@@ -38,12 +40,12 @@ namespace FinalProjectOfUnittest.Data.DAL
         //Update
         public void Update(IdentityRole a)
         {
-            RoleManager
+            Context.Update(a);
         }
 
         public void Delete(IdentityRole a)
         {
-            Context.IdentityRole.Remove(a);
+            Context.Remove(a);
         }
 
         public void Save()
