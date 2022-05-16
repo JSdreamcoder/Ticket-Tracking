@@ -16,5 +16,19 @@ namespace FinalProjectOfUnittest.Data.BLL
             return AppUserDAL.GetbyId(Id);
         }
 
+        public ICollection<AppUser> GetAllUsers()
+        {
+            return AppUserDAL.GetAll();//check GETALL in AppUserDal line29
+        }
+
+        public AppUser Get(Func<AppUser, bool> firstFuction)
+        {
+            return AppUserDAL.Get(firstFuction);//get data from DAL to BLL
+        }
+
+        public void Save()
+        {
+            AppUserDAL.Save();
+        }
     }
 }

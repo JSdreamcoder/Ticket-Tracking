@@ -21,6 +21,8 @@ namespace FinalProjectOfUnittest.Data.DAL
         {
             return Context.Roles.First(a => a.Id == id);
         }
+
+        //useding in Role BLL
         public IdentityRole Get(Func<IdentityRole, bool> firstFuction)
         {
             return Context.Roles.First(firstFuction);

@@ -1,100 +1,219 @@
 ﻿using FinalProjectOfUnittest.Data.BLL;
+using FinalProjectOfUnittest.Models;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FinalProjectOfUnittest.Controllers
 {
     public class AppUserController : Controller
     {
+
+        //make declaration first like last group project, difference is using appuserbll, bll gets data from dal
         private readonly AppUserBLL userbll;
-        public AppUserController(AppUserBLL ubll)
+        private readonly UserManager<AppUser> userManager;
+        private readonly RoleManager<IdentityRole> roleManager;
+        private readonly RoleBLL rolebll;
+        public AppUserController(AppUserBLL ubll, UserManager<AppUser> um, RoleManager<IdentityRole> rm,RoleBLL rbll)
         {
             userbll = ubll;
+            userManager = um;
+            roleManager = rm;
+            rolebll = rbll;
         }
         // GET: AppUserController
-        public ActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            try
+            {
+                var userAndRoles = new Dictionary<AppUser, IList<string>>();
+                //using bll is like a GET, should have a function call all user list in BLL(appuserbll line19)
+                var users = userbll.GetAllUsers(); 
+                foreach (var user in users)
+                {
+                    var roles = await userManager.GetRolesAsync(user);
+                    //async await is like a step by step coding, system will check await part run or not
+                    userAndRoles.Add(user, roles);//Dictionary should use key and value
+                }
+                return View(userAndRoles);
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
         }
+       
+        //GET METHOD
         public async Task<IActionResult> AssignRoleToUser(string userid)
         {
             try
             {
                 var user = userbll.GetUserbyId(userid);
-                return View();
+                var userRoles = await userManager.GetRolesAsync(user);
+                var allRoles = rolebll.GetAllRoles();//Need to use RoleDal
+
+                // prevent selectList of roles have the roles that user aleady have
+                var otherRoles = allRoles.Where(r => !userRoles.Contains(r.ToString())).ToList();
+
+                ViewBag.User = user;
+                ViewBag.UserRoles = await userManager.GetRolesAsync(user);
+                var selectlistOfRoles = new SelectList(otherRoles, "Name", "Name");
+                return View(selectlistOfRoles);
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+        }
+
+        [HttpPost] // HTTP POST 
+        public async Task<IActionResult> AssignRoleToUser(string role, string userid)
+        {
+            try
+            {
+                var user = userbll.GetUserbyId(userid);
+                await userManager.AddToRoleAsync(user, role);
+                await userManager.UpdateAsync(user);
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateRole(string rolename)
+        {
+            try
+            {
+                await roleManager.RoleExistsAsync(rolename);
+                await roleManager.CreateAsync(new IdentityRole(rolename));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+            return RedirectToAction("CreateRole");
+        }
+
+        public async Task<IActionResult> DeleteRole()
+        {
+            try
+            {
+                ViewBag.AllRoles = rolebll.GetAllRoles();
+                var allRoles = rolebll.GetAllRoles();
+                var roleList = new SelectList(allRoles, "Name", "Name");
+                return View(roleList);
+
             }
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
         }
-        // GET: AppUserController/Details/5
-        public ActionResult Details(int id)
-        {
-            return View();
-        }
-
-        // GET: AppUserController/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: AppUserController/Create
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public async Task<IActionResult> DeleteRole(string role)
         {
             try
             {
-                return RedirectToAction(nameof(Index));
+                var roleToDelete = rolebll.Get(r => r.Name == role);
+                rolebll.GetAllRoles().Remove(roleToDelete);
+                rolebll.Save();//make save function in RoleBLL
+                return RedirectToAction("DeleteRole");
+
             }
-            catch
+            catch (Exception ex)
             {
-                return View();
+                return BadRequest(ex.Message);
             }
         }
-
-        // GET: AppUserController/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
-
-        // POST: AppUserController/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public async Task<IActionResult> DeleteUserRole(string userid)
         {
             try
             {
-                return RedirectToAction(nameof(Index));
+                var user = userbll.GetUserbyId(userid);//need argument inside of bracket
+                var userRoles = await userManager.GetRolesAsync(user);
+                var allRoles = rolebll.GetAllRoles();
+
+
+                ViewBag.User = userbll.GetUserbyId(userid);//should use data
+                ViewBag.UserRoles = await userManager.GetRolesAsync(user);
+                var selectlistOfRoles = new SelectList(userRoles);
+                return View(selectlistOfRoles);
+
             }
-            catch
+            catch (Exception ex)
             {
-                return View();
+                return BadRequest(ex.Message);
             }
         }
-
-        // GET: AppUserController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: AppUserController/Delete/5
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public async Task<IActionResult> DeleteUserRole(string role, string userid)
         {
             try
             {
-                return RedirectToAction(nameof(Index));
+                var user = userbll.GetUserbyId(userid);
+                var roleId = rolebll.Get(r => r.Name == role).Id;
+                userManager.RemoveFromRoleAsync(user, role);
+                
+                //var userRole = _context.UserRoles.First(ur => ur.UserId == userid && ur.RoleId == roleId);
+                //rolebll.GetAllRoles().Remove(userRole);
+
+
+                rolebll.Save();
+                return RedirectToAction("Index");
+
             }
-            catch
+            catch (Exception ex)
             {
-                return View();
+                return BadRequest(ex.Message);
             }
         }
+
+        public async Task<IActionResult> DeleteUser()
+        {
+            try
+            {
+                ViewBag.AllUsers = userbll.GetAllUsers();
+                var Alluser = userbll.GetAllUsers();
+                var userList = new SelectList(Alluser, "Email", "Email");
+                return View(userList);
+                var users = userbll.GetAllUsers();
+                var users1 = userbll.GetAllUsers();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteUser(string username)
+        {
+            try
+            {
+                var user = userbll.Get(u => u.Email == username);//make get function in appuser bll
+
+
+
+                userbll.GetAllUsers().Remove(user);
+                userbll.Save();
+                return RedirectToAction("DeleteUser");
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }        
     }
 }
