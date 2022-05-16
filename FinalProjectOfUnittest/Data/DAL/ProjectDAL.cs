@@ -1,4 +1,5 @@
 ﻿using FinalProjectOfUnittest.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace FinalProjectOfUnittest.Data.DAL
 {
@@ -19,7 +20,8 @@ namespace FinalProjectOfUnittest.Data.DAL
         //Read
         public Project Get(int id)
         {
-            return Context.Project.First(a => a.Id == id);
+            var projects = Context.Project.Include(p => p.Tickets);
+            return projects.First(a => a.Id == id);
         }
         public Project Get(Func<Project, bool> firstFuction)
         {

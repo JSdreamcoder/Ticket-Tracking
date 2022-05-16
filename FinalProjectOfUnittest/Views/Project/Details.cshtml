@@ -1,0 +1,23 @@
+﻿@model FinalProjectOfUnittest.Models.Project
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>List of Tickets</h1>
+
+<div>
+    <h4>@Model.Name</h4>
+    <div>
+    <a asp-action="Index">Back to List</a>
+    </div>
+    <hr />
+    
+    <ol>
+        @foreach(var ticket in Model.Tickets)
+        {
+            <li><a asp-action="Details" asp-controller="Ticket" asp-route-id=@ticket.Id>@ticket.Title</a></li>
+        }
+    </ol>
+</div>
+

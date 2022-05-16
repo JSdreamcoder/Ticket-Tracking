@@ -76,6 +76,15 @@ namespace FinalProjectOfUnittest.Models
                     EmailConfirmed = true,
                     SecurityStamp = Guid.NewGuid().ToString()
                 };
+                AppUser user6 = new AppUser()
+                {
+                    Email = "Developer002@mitt.ca",
+                    NormalizedEmail = "DEVELOPER002@MITT.CA",
+                    UserName = "developer002@mitt.ca",
+                    NormalizedUserName = "DEVELOPER002@MITT.CA",
+                    EmailConfirmed = true,
+                    SecurityStamp = Guid.NewGuid().ToString()
+                };
 
                 var passwordHasher = new PasswordHasher<AppUser>();
                 var hasedPassword = passwordHasher.HashPassword(user, "P@ssword1");
@@ -103,36 +112,105 @@ namespace FinalProjectOfUnittest.Models
 
                 var passwordHasher5 = new PasswordHasher<AppUser>();
                 var hasedPassword5 = passwordHasher5.HashPassword(user5, "P@ssword1");
-                user4.PasswordHash = hasedPassword5;
+                user5.PasswordHash = hasedPassword5;
                 await userManager.CreateAsync(user5);
                 await userManager.AddToRoleAsync(user5, "Submitter");
+
+                var passwordHasher6 = new PasswordHasher<AppUser>();
+                var hasedPassword6 = passwordHasher6.HashPassword(user6, "P@ssword1");
+                user6.PasswordHash = hasedPassword6;
+                await userManager.CreateAsync(user6);
+                await userManager.AddToRoleAsync(user6, "Developer");
             }
+            context.SaveChanges();
             // Seed project
             if (!context.Project.Any())
             {
                 Project project1 = new Project();
-                project1.Name = "QnAPage";
+                project1.Name = "LanguageAI";
+                context.Project.Add(project1);
 
                 Project project2 = new Project();
-                project1.Name = "TaskManagement";
+                project2.Name = "CarNavigationAI";
+                context.Project.Add(project2);
             }
+            context.SaveChanges();
 
             if (!context.Ticket.Any())
             {
                 Ticket ticket1 = new Ticket();
                 ticket1.Title = "Bug Report Of Answering";
-                ticket1.Description = "I found a Bug When I make new Answer with emty title. After clicking Summit, I got Bad connection error";
+                ticket1.Description = "When I ask Where is your hometown, it says none.";
                 ticket1.Created = DateTime.Now;
-                ticket1.ProjectId = 1;
+                ticket1.ProjectId = context.Project.First(p=>p.Name== "LanguageAI").Id;
                 ticket1.TicketType = TicketTypes.BugReport;
                 ticket1.TicketPriority =  TicketPriorities.High;
                 ticket1.TicketStatus = TicketStatus.Assigned;
                 ticket1.OwnerUserId = context.AppUser.First(u => u.UserName == "Jaewon@gmail.com").Id;
                 ticket1.AssignedToUserId = context.AppUser.First(u => u.UserName == "developer001@mitt.ca").Id;
+                context.Ticket.Add(ticket1);
 
+                Ticket ticket2 = new Ticket();
+                ticket2.Title = "Jump out App";
+                ticket2.Description = "When I use App for a long time, The App will be Auto jump out.";
+                ticket2.Created = DateTime.Now;
+                ticket2.ProjectId = context.Project.First(p => p.Name == "LanguageAI").Id;
+                ticket2.TicketType = TicketTypes.BugReport;
+                ticket2.TicketPriority = TicketPriorities.High;
+                ticket2.TicketStatus = TicketStatus.Assigned;
+                ticket2.OwnerUserId = context.AppUser.First(u => u.UserName == "Jaewon@gmail.com").Id;
+                ticket2.AssignedToUserId = context.AppUser.First(u => u.UserName == "developer001@mitt.ca").Id;
+                context.Ticket.Add(ticket2);
 
+                Ticket ticket3 = new Ticket();
+                ticket3.Title = "Can't show some information";
+                ticket3.Description = "When I use App for a long time, I will lose some information";
+                ticket3.Created = DateTime.Now;
+                ticket3.ProjectId = context.Project.First(p => p.Name == "LanguageAI").Id;
+                ticket3.TicketType = TicketTypes.BugReport;
+                ticket3.TicketPriority = TicketPriorities.High;
+                ticket3.TicketStatus = TicketStatus.Assigned;
+                ticket3.OwnerUserId = context.AppUser.First(u => u.UserName == "Jaewon@gmail.com").Id;
+                ticket3.AssignedToUserId = context.AppUser.First(u => u.UserName == "developer001@mitt.ca").Id;
+                context.Ticket.Add(ticket3);
+
+                Ticket ticket4 = new Ticket();
+                ticket4.Title = "Bug Report Of Showing";
+                ticket4.Description = "Sometimes the App shows data that isn't what I want to show";
+                ticket4.Created = DateTime.Now;
+                ticket4.ProjectId = context.Project.First(p => p.Name == "CarNavigationAI").Id;
+                ticket4.TicketType = TicketTypes.BugReport;
+                ticket4.TicketPriority = TicketPriorities.High;
+                ticket4.TicketStatus = TicketStatus.Assigned;
+                ticket4.OwnerUserId = context.AppUser.First(u => u.UserName == "bob@gmail.com").Id;
+                ticket4.AssignedToUserId = context.AppUser.First(u => u.UserName == "developer002@mitt.ca").Id;//Qusetion? developer001 :developer002
+                context.Ticket.Add(ticket4);
+
+                Ticket ticket5 = new Ticket();
+                ticket5.Title = "According to the code";
+                ticket5.Description = "When I translate in aother language, it shows grabled characters";
+                ticket5.Created = DateTime.Now;
+                ticket5.ProjectId = context.Project.First(p => p.Name == "CarNavigationAI").Id;
+                ticket5.TicketType = TicketTypes.BugReport;
+                ticket5.TicketPriority = TicketPriorities.High;
+                ticket5.TicketStatus = TicketStatus.Assigned;
+                ticket5.OwnerUserId = context.AppUser.First(u => u.UserName == "bob@gmail.com").Id;
+                ticket5.AssignedToUserId = context.AppUser.First(u => u.UserName == "developer002@mitt.ca").Id;
+                context.Ticket.Add(ticket5);
+
+                Ticket ticket6 = new Ticket();
+                ticket6.Title = "Invalid user name";
+                ticket6.Description = "Sometimes I can't use my user name to log in to the App";
+                ticket6.Created = DateTime.Now;
+                ticket6.ProjectId = context.Project.First(p => p.Name == "CarNavigationAI").Id;
+                ticket6.TicketType = TicketTypes.BugReport;
+                ticket6.TicketPriority = TicketPriorities.High;
+                ticket6.TicketStatus = TicketStatus.Assigned;
+                ticket6.OwnerUserId = context.AppUser.First(u => u.UserName == "bob@gmail.com").Id;
+                ticket6.AssignedToUserId = context.AppUser.First(u => u.UserName == "developer002@mitt.ca").Id;
+                context.Ticket.Add(ticket6);
             }
-                context.SaveChanges();
+            context.SaveChanges();
 
 
         }

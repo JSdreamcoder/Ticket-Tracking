@@ -1,4 +1,7 @@
-﻿using FinalProjectOfUnittest.Models;
+﻿using FinalProjectOfUnittest.Data;
+using FinalProjectOfUnittest.Data.BLL;
+using FinalProjectOfUnittest.Data.DAL;
+using FinalProjectOfUnittest.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
@@ -6,16 +9,16 @@ namespace FinalProjectOfUnittest.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
 
-        public HomeController(ILogger<HomeController> logger)
+        public ProjectBLL projectBLL;
+        public HomeController(ApplicationDbContext context)
         {
-            _logger = logger;
+            projectBLL = new ProjectBLL(new ProjectDAL(context));
         }
 
         public IActionResult Index()
         {
-            return View();
+            return View(projectBLL.GetAll());
         }
 
         public IActionResult Privacy()

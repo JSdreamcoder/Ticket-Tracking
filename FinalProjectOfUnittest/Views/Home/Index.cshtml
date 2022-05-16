@@ -1,8 +1,15 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
-}
+﻿@model ICollection<Project>
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <h1 >Welcome To JBZ(Glabal machine AI Group) Support.</h1>
+    <h1 >How Can we Help You?</h1>
+
+    <ul style="list-style-type: none;">
+
+    @foreach(var project in Model)
+    {
+      <li style="color:red;font-size:50px"><a asp-route-projectid=@project.Id asp-route-projectname=@project.Name asp-action="Index" asp-controller="Ticket"  style="text-decoration:none">@project.Name</a></li>  
+    }
+    </ul>
+
 </div>
