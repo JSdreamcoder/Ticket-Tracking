@@ -22,7 +22,7 @@ namespace FinalProjectOfUnittest.Data.DAL
         public Project Get(int id)
         {
             var projects = Context.Project.Include(p => p.Tickets)
-                                          .Include(p=>p.ProjectUsers);
+                                          .Include(p=>p.ProjectUsers).ThenInclude(pu=>pu.User);
             return projects.First(a => a.Id == id);
         }
         public Project Get(Func<Project, bool> firstFuction)

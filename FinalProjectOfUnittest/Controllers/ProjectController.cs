@@ -16,10 +16,12 @@ namespace FinalProjectOfUnittest.Controllers
     {
         private readonly ProjectBLL projectbll;
         private readonly AppUserBLL userbll;
+        private readonly ProjectUserBLL projectUserbll;
         public ProjectController(ApplicationDbContext context)
         {
             projectbll = new ProjectBLL( new ProjectDAL(context));
             userbll = new AppUserBLL(new AppUserDAL(context));
+            projectUserbll = new ProjectUserBLL(new ProjectUserDAL(context));
         }
 
         // GET: Projects
@@ -118,18 +120,75 @@ namespace FinalProjectOfUnittest.Controllers
             return View(project);
         }
 
-        public async Task<IActionResult> AssignUser(int projectId)
+        public async Task<IActionResult> AssignUser(int projectId, string? message, int trick)
         {
             try
             {
                 var project = projectbll.GetById(projectId);
-                //var alluser
+                ViewBag.Message=message;
+                //alluser who are not in project
+                var allUsersNotInProject = userbll.GetAllUsers().Where(u => !u.ProjectUsers.Select(u => u.ProjectId).Contains(projectId));
+                var listOfusers = new SelectList(allUsersNotInProject, "Id", "UserName");
+                var newData = new ViewModel(listOfusers,project);
+                return View(newData);
             }
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
-            return View();
+            
+        }
+        [HttpPost]
+        public async Task<IActionResult> AssignUser(int projectid, string userid)
+        {
+            try
+            {
+
+                var newProjecUser = new ProjectUser();
+                newProjecUser.ProjectId = projectid;
+                newProjecUser.UserId = userid;
+                projectUserbll.Add(newProjecUser);
+                projectUserbll.Save();
+                return RedirectToAction("AssignUser",new { projectid = projectid,message="Success"});
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        public async Task<IActionResult> UnassignUser(int projectid,string? message, int trick)
+        {
+            try
+            {
+                var project = projectbll.GetById(projectid);
+                ViewBag.Message = message;
+                //alluser who are in project
+                var allUsersInProject = userbll.GetAllUsers().Where(u => u.ProjectUsers.Select(u => u.ProjectId).Contains(projectid));
+                var listOfusers = new SelectList(allUsersInProject, "Id", "UserName");
+                var newData = new ViewModel(listOfusers, project);
+                return View(newData);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+        }
+        [HttpPost]
+        public async Task<IActionResult> UnassignUser(int projectid, string userid)
+        {
+            try
+            {
+                var projectToDelete = projectUserbll.Get(pu => pu.ProjectId == projectid && pu.UserId == userid);
+                projectUserbll.Delete(projectToDelete);
+                projectUserbll.Save();
+                return RedirectToAction("UnassignUser", new { projectid = projectid, message = "Success" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         private bool ProjectExists(int id)

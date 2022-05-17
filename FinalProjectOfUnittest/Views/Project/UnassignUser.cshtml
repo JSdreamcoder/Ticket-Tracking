@@ -9,7 +9,7 @@
     }
 </ul>
 
-<form method="Post" asp-action="AssignUser" asp-route-projectid=@Model.project1.Id>
+<form method="Post" asp-action="UnassignUser" asp-route-projectid=@Model.project1.Id>
     <select name="userid" asp-items=@Model.selectList1 ></select>
     <button type="submit">Submit</button>
 </form>

@@ -13,7 +13,7 @@ namespace FinalProjectOfUnittest.Data.DAL
         //Create
         public void Add(ProjectUser appuser)
         {
-            Context.Add(appuser);
+            Context.ProjectUser.Add(appuser);
         }
 
         //Read

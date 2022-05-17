@@ -1,4 +1,5 @@
 ﻿using FinalProjectOfUnittest.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace FinalProjectOfUnittest.Data.DAL
 {
@@ -23,6 +24,7 @@ namespace FinalProjectOfUnittest.Data.DAL
         }
         public AppUser Get(Func<AppUser, bool> firstFuction)
         {
+            var allusers = Context.AppUser.Include(u => u.ProjectUsers);
             return Context.AppUser.First(firstFuction);
             
         }

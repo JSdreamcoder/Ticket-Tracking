@@ -13,6 +13,12 @@ namespace FinalProjectOfUnittest.Data.BLL
 
         public AppUser GetUserbyId(string Id)
         {
+            
+            if (Id == null)
+            {
+                throw new Exception("Id never be null");
+            }
+
             return AppUserDAL.GetbyId(Id);
         }
 
