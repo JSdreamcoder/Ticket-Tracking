@@ -16,7 +16,7 @@ namespace FinalProjectOfUnittest.Data.DAL
         {
             Context.Add(appuser);
         }
-
+      
         //Read
         public AppUser GetbyId(string id)
         {

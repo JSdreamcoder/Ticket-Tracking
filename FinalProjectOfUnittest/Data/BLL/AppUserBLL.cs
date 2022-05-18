@@ -6,6 +6,7 @@ namespace FinalProjectOfUnittest.Data.BLL
     public class AppUserBLL
     {
         public AppUserDAL AppUserDAL;
+        
         public AppUserBLL(AppUserDAL adal)
         {
             AppUserDAL = adal;

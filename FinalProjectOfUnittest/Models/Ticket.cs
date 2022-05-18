@@ -52,11 +52,11 @@
 
     public enum TicketTypes
     { 
-        GeneralQuestion,
-        BugReport,
-        Payment,
-        TechIssue,
-        AccountIssue
+        GeneralQuestion,  // Low
+        BugReport,        // High
+        Payment,          // Medium
+        TechIssue,        // Medium
+        AccountIssue      // High
     }
 
 

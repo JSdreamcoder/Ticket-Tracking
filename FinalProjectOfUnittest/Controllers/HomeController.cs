@@ -5,6 +5,7 @@ using FinalProjectOfUnittest.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
+
 namespace FinalProjectOfUnittest.Controllers
 {
     public class HomeController : Controller
@@ -15,7 +16,7 @@ namespace FinalProjectOfUnittest.Controllers
         {
             projectBLL = new ProjectBLL(new ProjectDAL(context));
         }
-
+       
         public IActionResult Index()
         {
             return View(projectBLL.GetAll());

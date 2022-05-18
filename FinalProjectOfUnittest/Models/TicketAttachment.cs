@@ -16,5 +16,6 @@
 
         public int TicketId { get; set; }
         public Ticket? ticket { get; set; }
+
     }
 }

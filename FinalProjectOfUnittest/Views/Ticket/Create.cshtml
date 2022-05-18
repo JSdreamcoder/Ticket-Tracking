@@ -10,8 +10,13 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Create">
+        <form asp-action="Create" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+             <div class="form-group">
+                <label asp-for="TicketType" class="control-label"></label>
+                <select asp-for="TicketType" class="form-control" asp-items="@Html.GetEnumSelectList<TicketTypes>()"></select>
+                <span asp-validation-for="TicketType" class="text-danger"></span>
+            </div>
             <div class="form-group">
                 <label asp-for="Title" class="control-label"></label>
                 <input asp-for="Title" class="form-control" />
@@ -23,41 +28,40 @@
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Created" class="control-label"></label>
-                <input asp-for="Created" class="form-control" />
+                
+                <input type="hidden" asp-for="Created" class="form-control" value=@DateTime.Now />
                 <span asp-validation-for="Created" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Updated" class="control-label"></label>
-                <input asp-for="Updated" class="form-control" />
+           <div class="form-group">
+                
+                <input type="hidden" asp-for="Updated" class="form-control"/>
                 <span asp-validation-for="Updated" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="ProjectId" class="control-label"></label>
-                <select asp-for="ProjectId" class ="form-control" asp-items="ViewBag.ProjectId"></select>
+                
+                <input type="hidden" asp-for="ProjectId" class ="form-control" value=@ViewBag.ProjectId/>
             </div>
+           
             <div class="form-group">
-                <label asp-for="TicketType" class="control-label"></label>
-                <select asp-for="TicketType" class="form-control"></select>
-                <span asp-validation-for="TicketType" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="TicketPriority" class="control-label"></label>
-                <select asp-for="TicketPriority" class="form-control"></select>
+               
+                <input type="hidden" asp-for="TicketPriority" class="form-control" value=2 />
                 <span asp-validation-for="TicketPriority" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="TicketStatus" class="control-label"></label>
-                <select asp-for="TicketStatus" class="form-control"></select>
+                
+                <input type="hidden" asp-for="TicketStatus" class="form-control" value=0 />
                 <span asp-validation-for="TicketStatus" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="OwnerUserId" class="control-label"></label>
-                <select asp-for="OwnerUserId" class ="form-control" asp-items="ViewBag.OwnerUserId"></select>
+               
+                <input type="hidden" asp-for="OwnerUserId" class ="form-control" value=@ViewBag.UserId></input>
             </div>
             <div class="form-group">
-                <label asp-for="AssignedToUserId" class="control-label"></label>
-                <select asp-for="AssignedToUserId" class ="form-control" asp-items="ViewBag.AssignedToUserId"></select>
+                
+                <input type="hidden" asp-for="AssignedToUserId" class ="form-control"></input>
+            </div>
+            <div class="form-group">
+            <input name="files" type="file" multiple>
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />

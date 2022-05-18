@@ -1,0 +1,10 @@
+﻿<form enctype="multipart/form-data" method="post" asp-action="UpLoad">
+    <dl>
+        
+        <dd>
+            <input name="files" type="file" multiple>
+            @*<span asp-validation-for="FileUpload.FormFile"></span>*@
+        </dd>
+    </dl>
+    <input asp-page-handler="Upload" class="btn" type="submit" value="Upload" />
+</form>

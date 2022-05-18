@@ -6,7 +6,7 @@
 <h1>@ViewBag.ProjectName Tickets</h1>
 
 <p>
-    <a asp-action="Create">Submit new Ticket</a>
+    <a asp-action="Create" asp-route-projectid=@ViewBag.ProjectId>Submit new Ticket</a>
 </p>
 
 <form asp-action="Index" method="get" >
