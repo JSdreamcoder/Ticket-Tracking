@@ -20,11 +20,13 @@ namespace FinalProjectOfUnittest.Controllers
         private readonly UserManager<AppUser> userManager;  
         private readonly AppUserBLL userbll;
         private readonly ProjectBLL projectbll;
+        private readonly TicketAttachmentBLL ticketAttachmentBLL;
         public TicketController(ApplicationDbContext context,UserManager<AppUser> um)
         {
             ticketbll = new TicketBLL(new TicketDAL(context));
             userbll = new AppUserBLL(new AppUserDAL(context));
             projectbll = new ProjectBLL(new ProjectDAL(context));
+            ticketAttachmentBLL = new TicketAttachmentBLL(new TicketAttachmentDAL(context));
             userManager = um;
         }
 
@@ -71,34 +73,34 @@ namespace FinalProjectOfUnittest.Controllers
             return View(ticket);
         }
         
-        public IActionResult UpLoad()
-        {
-            return View();
-        }
-        [HttpPost]
-        public async Task<IActionResult> UpLoad(List<IFormFile> files)
-        {
-            string folederPath = Environment.CurrentDirectory + "\\UploadFiles\\";
-            long size = files.Sum(f => f.Length);
+        //public IActionResult UpLoad()
+        //{
+        //    return View();
+        //}
+        //[HttpPost]
+        //public async Task<IActionResult> UpLoad(List<IFormFile> files)
+        //{
+        //    string folederPath = Environment.CurrentDirectory + "\\UploadFiles\\";
+        //    long size = files.Sum(f => f.Length);
 
-            foreach (var formFile in files)
-            {
-                if (formFile.Length > 0)
-                {
-                    var filePath = Path.Combine(folederPath,Path.GetFileName(formFile.FileName));
+        //    foreach (var formFile in files)
+        //    {
+        //        if (formFile.Length > 0)
+        //        {
+        //            var filePath = Path.Combine(folederPath,Path.GetFileName(formFile.FileName));
 
-                    using (var stream = System.IO.File.Create(filePath))
-                    {
-                        await formFile.CopyToAsync(stream);
-                    }
-                }
-            }
+        //            using (var stream = System.IO.File.Create(filePath))
+        //            {
+        //                await formFile.CopyToAsync(stream);
+        //            }
+        //        }
+        //    }
 
             // Process uploaded files
             // Don't rely on or trust the FileName property without validation.
             
-            return Ok(new { count = files.Count, size });
-        }
+        //    return Ok(new { count = files.Count, size });
+        //}
         // GET: Tickets/Create
         public IActionResult Create(int projectid)
         {
@@ -122,6 +124,11 @@ namespace FinalProjectOfUnittest.Controllers
         public async Task<IActionResult> Create([Bind("Id,Title,Description,Created,Updated,ProjectId,TicketType,TicketPriority,TicketStatus,OwnerUserId,AssignedToUserId")] Ticket ticket, List<IFormFile> files)
         {
             var project = projectbll.GetById(ticket.ProjectId);
+            //GeneralQuestion,  // Low  - default value
+            //BugReport,        // High
+            //Payment,          // Medium
+            //TechIssue,        // Medium
+            //AccountIssue      // High
             switch (ticket.TicketType)
             {
                 case TicketTypes.BugReport :
@@ -137,34 +144,47 @@ namespace FinalProjectOfUnittest.Controllers
                     ticket.TicketPriority = TicketPriorities.High;
                     break ;
             }
-            
-            string folederPath = Environment.CurrentDirectory + "\\UploadFiles\\";
-            long size = files.Sum(f => f.Length);
-
-            foreach (var formFile in files)
-            {
-                if (formFile.Length > 0)
-                {
-                    var filePath = Path.Combine(folederPath, Path.GetFileName(formFile.FileName));
-
-                    using (var stream = System.IO.File.Create(filePath))
-                    {
-                        await formFile.CopyToAsync(stream);
-                    }
-                }
-            }
 
             if (ModelState.IsValid)
             {
                 ticketbll.Add(ticket);
                 ticketbll.Save();
-                return RedirectToAction(nameof(Index), new {projectid=project.Id,projectname=project.Name});
+
+                //for File upload and thi is from Microsoft
+                foreach (var formFile in files)
+                {
+                    string folederPath = Environment.CurrentDirectory + "\\UploadFiles\\";
+                    string filePath = "";
+                    if (formFile.Length > 0)
+                    {
+                        filePath = Path.Combine(folederPath, Path.GetFileName(formFile.FileName));
+
+                        using (var stream = System.IO.File.Create(filePath))
+                        {
+                            await formFile.CopyToAsync(stream);
+                        }
+                    }
+
+                    //Create TicketAttachment
+                    var newAttachment = new TicketAttachment();
+                    newAttachment.FilePath = filePath;
+                    newAttachment.Created = DateTime.Now;
+                    newAttachment.UserId = ticket.OwnerUserId;
+                    newAttachment.TicketId = ticket.Id;
+                    ticketAttachmentBLL.Add(newAttachment);
+                    ticketAttachmentBLL.Save();
+                }
+                //End of file upload code
+
+
+                return RedirectToAction(nameof(Index), new { projectid = project.Id, projectname = project.Name });
             }
-        //    GeneralQuestion,  // Low
-        //BugReport,        // High
-        //Payment,          // Medium
-        //TechIssue,        // Medium
-        //AccountIssue      // High
+
+            
+
+            
+           
+        
 
 
             return View(ticket);
