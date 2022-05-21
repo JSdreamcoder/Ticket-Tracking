@@ -29,7 +29,7 @@ namespace FinalProjectOfUnittest.Controllers
             ticketAttachmentBLL = new TicketAttachmentBLL(new TicketAttachmentDAL(context));
             userManager = um;
         }
-
+        
         // GET: Tickets
         public async Task<IActionResult> Index(int projectid,string projectname,string searchString, string currentFilter, int? pageNumber)
         {
@@ -46,11 +46,12 @@ namespace FinalProjectOfUnittest.Controllers
             }
             var Tickets = ticketbll.GetAll().Where(t=>t.ProjectId==projectid);
 
-            
+            // For Searching
             if (!String.IsNullOrEmpty(searchString))
             {
                Tickets = Tickets.Where(t=>t.Title.ToLower().Contains(searchString.ToLower())).ToList();
             }
+            // For paging
             int pageSize = 10;
             return View(PaginatedList<Ticket>.Create(Tickets,pageNumber ?? 1,pageSize));
         }
@@ -65,14 +66,28 @@ namespace FinalProjectOfUnittest.Controllers
 
             var ticket = ticketbll.GetAll()
                 .FirstOrDefault(m => m.Id == id);
+            var filePaths = ticket.TicketAttachments.Select(t=>t.FilePath).ToList();
+            List<string> fileNames = new List<string>();
+            foreach (var file in filePaths)
+            {
+                fileNames.Add(Path.GetFileName(file));
+            }
+           
             if (ticket == null)
             {
                 return NotFound();
             }
-
-            return View(ticket);
+            var ticketAndfilePaths = new ViewModel(filePaths,fileNames ,ticket);
+            return View(ticketAndfilePaths);
         }
-        
+
+        public FileResult Download(string filePath)
+        {
+            byte[] fileBytes = System.IO.File.ReadAllBytes(filePath);
+            string fileName = Path.GetFileName(filePath);
+            return File(fileBytes, System.Net.Mime.MediaTypeNames.Application.Octet, fileName);
+        }
+
         //public IActionResult UpLoad()
         //{
         //    return View();
@@ -96,9 +111,9 @@ namespace FinalProjectOfUnittest.Controllers
         //        }
         //    }
 
-            // Process uploaded files
-            // Don't rely on or trust the FileName property without validation.
-            
+        // Process uploaded files
+        // Don't rely on or trust the FileName property without validation.
+
         //    return Ok(new { count = files.Count, size });
         //}
         // GET: Tickets/Create
@@ -153,11 +168,12 @@ namespace FinalProjectOfUnittest.Controllers
                 //for File upload and thi is from Microsoft
                 foreach (var formFile in files)
                 {
-                    string folederPath = Environment.CurrentDirectory + "\\UploadFiles\\";
+                    string folderPath = Environment.CurrentDirectory + "\\UploadFiles\\";
+                   // folderPath = folderPath.Replace("\\", "/");
                     string filePath = "";
                     if (formFile.Length > 0)
                     {
-                        filePath = Path.Combine(folederPath, Path.GetFileName(formFile.FileName));
+                        filePath = Path.Combine(folderPath, Path.GetFileName(formFile.FileName));
 
                         using (var stream = System.IO.File.Create(filePath))
                         {

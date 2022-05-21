@@ -59,7 +59,11 @@
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                @if(ViewBag.UserRole == "ProjectManager"||ViewBag.UserRole =="Adminitorator")
+                {
+                    <a asp-action="AssignTicketToUser" asp-route-id="@item.Id">Assign Ticket</a>
+                        
+                }
             </td>
         </tr>
 }

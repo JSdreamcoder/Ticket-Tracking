@@ -16,7 +16,14 @@ namespace FinalProjectOfUnittest.Controllers
         {
             projectBLL = new ProjectBLL(new ProjectDAL(context));
         }
-       
+        public IActionResult test()
+        {
+            var filepath = @"C:\Users\asses\source\repos\FinalProjectOfUnittest\FinalProjectOfUnittest\UploadFIles\complexttype.png";
+            var extension = Path.GetExtension(filepath);
+            byte[] FileBytes = System.IO.File.ReadAllBytes(filepath);
+            return File(FileBytes, extension);
+            
+        }
         public IActionResult Index()
         {
             return View(projectBLL.GetAll());
