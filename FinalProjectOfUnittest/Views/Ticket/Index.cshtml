@@ -3,6 +3,9 @@
 @{
     var IsAdmin = User.IsInRole("Administrator");
     var IsProjectManager = User.IsInRole("ProjectManager");
+    var IsDeveloper = User.IsInRole("Developer");
+    var isSubmmiter = User.IsInRole("Submitter");
+    
 }
 
 
@@ -60,8 +63,30 @@
             </td>
         
             <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                @*checking if user is admin*@
+                @if(IsAdmin)
+                {
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> 
+                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> 
+                }
+                 @*checking if user is project user and user is assinged this project*@
+                else if(IsProjectManager && ViewBag.IsProjectUser)
+                {
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> 
+                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> 
+                }
+                @*checking if user is deleloper and is assinged this ticket*@
+                else if(IsDeveloper && item.AssignedToUserId == ViewBag.UserId)
+                {
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> 
+                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> 
+                }else if(isSubmmiter && item.OwnerUserId == ViewBag.UserId)
+                {
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> 
+                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> 
+                }
+
+
                 @if(IsAdmin||IsProjectManager)
                 {
                     <a asp-action="AssignTicketToUser" asp-route-ticketid="@item.Id">Assign Ticket</a>

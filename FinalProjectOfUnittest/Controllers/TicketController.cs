@@ -21,12 +21,14 @@ namespace FinalProjectOfUnittest.Controllers
         private readonly AppUserBLL userbll;
         private readonly ProjectBLL projectbll;
         private readonly TicketAttachmentBLL ticketAttachmentBLL;
+        private readonly ProjectUserBLL projectUserbll;
         public TicketController(ApplicationDbContext context,UserManager<AppUser> um)
         {
             ticketbll = new TicketBLL(new TicketDAL(context));
             userbll = new AppUserBLL(new AppUserDAL(context));
             projectbll = new ProjectBLL(new ProjectDAL(context));
             ticketAttachmentBLL = new TicketAttachmentBLL(new TicketAttachmentDAL(context));
+            projectUserbll = new ProjectUserBLL(new ProjectUserDAL(context));
             userManager = um;
         }
         
@@ -34,11 +36,19 @@ namespace FinalProjectOfUnittest.Controllers
         public async Task<IActionResult> Index(int projectid,string projectname,string searchString, string currentFilter, int? pageNumber)
         {
             var userName = User.Identity.Name;
-            var user = await userManager.FindByNameAsync(userName);
+            var user = new AppUser();
+            if (userName != null)
+              user = await userManager.FindByNameAsync(userName);
             ViewBag.UserRole = await userManager.GetRolesAsync(user);
+            ViewBag.UserId = user.Id;
             ViewData["CurrentFilter"] = searchString;
             ViewBag.ProjectName = projectname;
-            ViewBag.projectId = projectid;
+            ViewBag.ProjectId = projectid;
+            ViewBag.IsProjectUser = false;
+            // all users who assinged this project
+            var projectUsers = projectUserbll.GetAll().FirstOrDefault(pu=> pu.ProjectId ==projectid &&  pu.UserId == user.Id);
+            if (projectUsers != null)
+                ViewBag.IsProjectUser = true;
             if (searchString != null)
             {
                 pageNumber = 1;
