@@ -147,21 +147,7 @@ namespace FinalProjectOfUnittest.Controllers
             //Payment,          // Medium
             //TechIssue,        // Medium
             //AccountIssue      // High
-            switch (ticket.TicketType)
-            {
-                case TicketTypes.BugReport :
-                    ticket.TicketPriority = TicketPriorities.High;
-                    break;
-                case TicketTypes.Payment:
-                    ticket.TicketPriority = TicketPriorities.Medium;
-                    break;
-                case TicketTypes.TechIssue :
-                    ticket.TicketPriority = TicketPriorities.Medium;
-                    break ;
-                case TicketTypes.AccountIssue :
-                    ticket.TicketPriority = TicketPriorities.High;
-                    break ;
-            }
+            ticket = SetTicketPriority(ticket);
 
             if (ModelState.IsValid)
             {
@@ -258,6 +244,7 @@ namespace FinalProjectOfUnittest.Controllers
             }
 
             var ticket = ticketbll.GetById(id);
+            ViewBag.ProjectId = ticket.ProjectId;
             if (ticket == null)
             {
                 return NotFound();
@@ -271,10 +258,10 @@ namespace FinalProjectOfUnittest.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int ticketid, string title,string description,TicketTypes type)
+        public async Task<IActionResult> Edit(int ticketid, [Bind("Id,Title,Description,TicketType")] Ticket newticket)
         {
-            var ticket = ticketbll.GetById(ticketid);
-            if (ticket == null)
+            var originalticket = ticketbll.GetById(newticket.Id);
+            if (originalticket == null)
             {
                 return NotFound();
             }
@@ -282,17 +269,19 @@ namespace FinalProjectOfUnittest.Controllers
            
             try
             {
-                ticket.Title = title;
-                ticket.Description = description;
-                ticket.TicketType = type;
-                ticketbll.Update(ticket);
+                originalticket.Title = newticket.Title;
+                originalticket.Description = newticket.Description;
+                originalticket.TicketType = newticket.TicketType;
+                originalticket.Updated = DateTime.Now;
+                originalticket = SetTicketPriority(originalticket);
+                ticketbll.Update(originalticket);
                 ticketbll.Save();
             }
             catch (Exception ex)
             {
                 throw new Exception(ex.Message);
             }
-            return RedirectToAction(nameof(Index), new {id = ticket.Id,message = "Success"});
+            return RedirectToAction(nameof(Edit), new {id = originalticket.Id,message = "Success"});
             
           
             
@@ -347,6 +336,35 @@ namespace FinalProjectOfUnittest.Controllers
         {
             ViewBag.Message = message;
             return View();
+        }
+
+        public Ticket SetTicketPriority(Ticket ticket)
+        {
+            //GeneralQuestion,  // Low  - default value
+            //BugReport,        // High
+            //Payment,          // Medium
+            //TechIssue,        // Medium
+            //AccountIssue      // High
+            switch (ticket.TicketType)
+            {
+                case TicketTypes.BugReport:
+                    ticket.TicketPriority = TicketPriorities.High;
+                    break;
+                case TicketTypes.Payment:
+                    ticket.TicketPriority = TicketPriorities.Medium;
+                    break;
+                case TicketTypes.TechIssue:
+                    ticket.TicketPriority = TicketPriorities.Medium;
+                    break;
+                case TicketTypes.AccountIssue:
+                    ticket.TicketPriority = TicketPriorities.High;
+                    break;
+                case TicketTypes.GeneralQuestion:
+                    ticket.TicketPriority = TicketPriorities.Low;
+                    break;
+            }
+
+            return ticket;
         }
     }
 }
