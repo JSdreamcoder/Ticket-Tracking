@@ -10,18 +10,26 @@ using FinalProjectOfUnittest.Models;
 using FinalProjectOfUnittest.Data.BLL;
 using FinalProjectOfUnittest.Data.DAL;
 using Assignment_QnAWeb.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace FinalProjectOfUnittest.Controllers
 {
     public class TicketController : Controller
     {
         private readonly TicketBLL ticketbll;
-
-        public TicketController(ApplicationDbContext context)
+        private readonly UserManager<AppUser> userManager;  
+        private readonly AppUserBLL userbll;
+        private readonly ProjectBLL projectbll;
+        private readonly TicketAttachmentBLL ticketAttachmentBLL;
+        public TicketController(ApplicationDbContext context,UserManager<AppUser> um)
         {
             ticketbll = new TicketBLL(new TicketDAL(context));
+            userbll = new AppUserBLL(new AppUserDAL(context));
+            projectbll = new ProjectBLL(new ProjectDAL(context));
+            ticketAttachmentBLL = new TicketAttachmentBLL(new TicketAttachmentDAL(context));
+            userManager = um;
         }
-
+        
         // GET: Tickets
         public async Task<IActionResult> Index(int projectid,string projectname,string searchString, string currentFilter, int? pageNumber)
         {
@@ -38,11 +46,12 @@ namespace FinalProjectOfUnittest.Controllers
             }
             var Tickets = ticketbll.GetAll().Where(t=>t.ProjectId==projectid);
 
-            
+            // For Searching
             if (!String.IsNullOrEmpty(searchString))
             {
                Tickets = Tickets.Where(t=>t.Title.ToLower().Contains(searchString.ToLower())).ToList();
             }
+            // For paging
             int pageSize = 10;
             return View(PaginatedList<Ticket>.Create(Tickets,pageNumber ?? 1,pageSize));
         }
@@ -57,41 +66,145 @@ namespace FinalProjectOfUnittest.Controllers
 
             var ticket = ticketbll.GetAll()
                 .FirstOrDefault(m => m.Id == id);
+            var filePaths = ticket.TicketAttachments.Select(t=>t.FilePath).ToList();
+            List<string> fileNames = new List<string>();
+            foreach (var file in filePaths)
+            {
+                fileNames.Add(Path.GetFileName(file));
+            }
+           
             if (ticket == null)
             {
                 return NotFound();
             }
+            var ticketAndfilePaths = new ViewModel(filePaths,fileNames ,ticket);
+            return View(ticketAndfilePaths);
+        }
+
+        public FileResult Download(string filePath)
+        {
+            byte[] fileBytes = System.IO.File.ReadAllBytes(filePath);
+            string fileName = Path.GetFileName(filePath);
+            return File(fileBytes, System.Net.Mime.MediaTypeNames.Application.Octet, fileName);
+        }
+
+        //public IActionResult UpLoad()
+        //{
+        //    return View();
+        //}
+        //[HttpPost]
+        //public async Task<IActionResult> UpLoad(List<IFormFile> files)
+        //{
+        //    string folederPath = Environment.CurrentDirectory + "\\UploadFiles\\";
+        //    long size = files.Sum(f => f.Length);
+
+        //    foreach (var formFile in files)
+        //    {
+        //        if (formFile.Length > 0)
+        //        {
+        //            var filePath = Path.Combine(folederPath,Path.GetFileName(formFile.FileName));
+
+        //            using (var stream = System.IO.File.Create(filePath))
+        //            {
+        //                await formFile.CopyToAsync(stream);
+        //            }
+        //        }
+        //    }
+
+        // Process uploaded files
+        // Don't rely on or trust the FileName property without validation.
+
+        //    return Ok(new { count = files.Count, size });
+        //}
+        // GET: Tickets/Create
+        public IActionResult Create(int projectid)
+        {
+            if (User.Identity.Name == null)
+            {
+                return RedirectToAction("Error", new {message = "You need to log in"});
+            }
+            
+            ViewBag.ProjectId = projectid;
+            var userName = User.Identity.Name;
+            var userId = userbll.Get(u=> u.UserName == userName).Id;
+            ViewBag.UserId = userId;
+            return View();
+        }
+
+        // POST: Tickets/Create
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create([Bind("Id,Title,Description,Created,Updated,ProjectId,TicketType,TicketPriority,TicketStatus,OwnerUserId,AssignedToUserId")] Ticket ticket, List<IFormFile> files)
+        {
+            var project = projectbll.GetById(ticket.ProjectId);
+            //GeneralQuestion,  // Low  - default value
+            //BugReport,        // High
+            //Payment,          // Medium
+            //TechIssue,        // Medium
+            //AccountIssue      // High
+            switch (ticket.TicketType)
+            {
+                case TicketTypes.BugReport :
+                    ticket.TicketPriority = TicketPriorities.High;
+                    break;
+                case TicketTypes.Payment:
+                    ticket.TicketPriority = TicketPriorities.Medium;
+                    break;
+                case TicketTypes.TechIssue :
+                    ticket.TicketPriority = TicketPriorities.Medium;
+                    break ;
+                case TicketTypes.AccountIssue :
+                    ticket.TicketPriority = TicketPriorities.High;
+                    break ;
+            }
+
+            if (ModelState.IsValid)
+            {
+                ticketbll.Add(ticket);
+                ticketbll.Save();
+
+                //for File upload and thi is from Microsoft
+                foreach (var formFile in files)
+                {
+                    string folderPath = Environment.CurrentDirectory + "\\UploadFiles\\";
+                   // folderPath = folderPath.Replace("\\", "/");
+                    string filePath = "";
+                    if (formFile.Length > 0)
+                    {
+                        filePath = Path.Combine(folderPath, Path.GetFileName(formFile.FileName));
+
+                        using (var stream = System.IO.File.Create(filePath))
+                        {
+                            await formFile.CopyToAsync(stream);
+                        }
+                    }
+
+                    //Create TicketAttachment
+                    var newAttachment = new TicketAttachment();
+                    newAttachment.FilePath = filePath;
+                    newAttachment.Created = DateTime.Now;
+                    newAttachment.UserId = ticket.OwnerUserId;
+                    newAttachment.TicketId = ticket.Id;
+                    ticketAttachmentBLL.Add(newAttachment);
+                    ticketAttachmentBLL.Save();
+                }
+                //End of file upload code
+
+
+                return RedirectToAction(nameof(Index), new { projectid = project.Id, projectname = project.Name });
+            }
+
+            
+
+            
+           
+        
+
 
             return View(ticket);
         }
-
-        //// GET: Tickets/Create
-        //public IActionResult Create()
-        //{
-        //    ViewData["AssignedToUserId"] = new SelectList(_context.AppUser, "Id", "Id");
-        //    ViewData["OwnerUserId"] = new SelectList(_context.AppUser, "Id", "Id");
-        //    ViewData["ProjectId"] = new SelectList(_context.Project, "Id", "Id");
-        //    return View();
-        //}
-
-        //// POST: Tickets/Create
-        //// To protect from overposting attacks, enable the specific properties you want to bind to.
-        //// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> Create([Bind("Id,Title,Description,Created,Updated,ProjectId,TicketType,TicketPriority,TicketStatus,OwnerUserId,AssignedToUserId")] Ticket ticket)
-        //{
-        //    if (ModelState.IsValid)
-        //    {
-        //        _context.Add(ticket);
-        //        await _context.SaveChangesAsync();
-        //        return RedirectToAction(nameof(Index));
-        //    }
-        //    ViewData["AssignedToUserId"] = new SelectList(_context.AppUser, "Id", "Id", ticket.AssignedToUserId);
-        //    ViewData["OwnerUserId"] = new SelectList(_context.AppUser, "Id", "Id", ticket.OwnerUserId);
-        //    ViewData["ProjectId"] = new SelectList(_context.Project, "Id", "Id", ticket.ProjectId);
-        //    return View(ticket);
-        //}
 
         //// GET: Tickets/Edit/5
         //public async Task<IActionResult> Edit(int? id)
@@ -194,5 +307,11 @@ namespace FinalProjectOfUnittest.Controllers
         //{
         //  return (_context.Ticket?.Any(e => e.Id == id)).GetValueOrDefault();
         //}
+
+        public IActionResult Error(string message)
+        {
+            ViewBag.Message = message;
+            return View();
+        }
     }
 }

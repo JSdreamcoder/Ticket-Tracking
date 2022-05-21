@@ -10,10 +10,28 @@ namespace FinalProjectOfUnittest.Data.BLL
         {
             ticketDAL = td;
         }
+        public void Add(Ticket newticket)
+        {
+            if (newticket.Title == null)
+            {
+                throw new ArgumentNullException("You must write title name");
+            }else if (newticket.Description == null)
+            {
+                throw new ArgumentNullException("You must write descrition");
+            }else
+            {
+                ticketDAL.Add(newticket);
+            }
+        }
 
         public ICollection<Ticket> GetAll()
         {
             return ticketDAL.GetAll(); 
+        }
+
+        public void Save()
+        {
+            ticketDAL.Save();
         }
 
     }

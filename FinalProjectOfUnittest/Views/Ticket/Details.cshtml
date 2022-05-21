@@ -1,5 +1,4 @@
-﻿@model FinalProjectOfUnittest.Models.Ticket
-
+﻿@model ViewModel
 @{
     ViewData["Title"] = "Details";
 }
@@ -11,68 +10,85 @@
     <hr />
     <dl class="row">
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Title)
+            Title
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Title)
+            @Model.ticket1.Title
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Description)
+           Description
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Description)
+            @Model.ticket1.Description
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Created)
+            Created Date
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Created)
+            @Model.ticket1.Created
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Updated)
+            Updated
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Updated)
+            @Model.ticket1.Updated
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Project)
+            Project
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Project.Id)
+            @Model.ticket1.Project.Name
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.TicketType)
+            TicketType
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.TicketType)
+            @Model.ticket1.TicketType
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.TicketPriority)
+            TicketPriority
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.TicketPriority)
+            @Model.ticket1.TicketPriority
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.TicketStatus)
+            TicketStatus
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.TicketStatus)
+            @Model.ticket1.TicketStatus
+        <dt class = "col-sm-2">
+            Submitter
+        </dt>
+        <dd class = "col-sm-10">
+            @Model.ticket1.OwnerUser.UserName
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.OwnerUser)
+            Assigned Developer
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.OwnerUser.Id)
+            @if(Model.ticket1.AssignedToUser != null)
+            {
+                @Model.ticket1.AssignedToUser.UserName    
+            }
+            
         </dd>
+
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.AssignedToUser)
+            Attaced Files
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.AssignedToUser.Id)
+                @{
+                    var i = 0;
+                }
+            @foreach(var path in Model.stringList)
+            {
+                <a asp-action="Download"  class="btn btn-info" asp-route-filePath=@path>@Model.stringList2[i]</a>   
+                i++;
+            }
         </dd>
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
+    <a asp-action="Edit" asp-route-id="@Model.ticket1?.Id">Edit</a> |
     <a asp-action="Index">Back to List</a>
 </div>

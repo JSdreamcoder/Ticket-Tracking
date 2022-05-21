@@ -29,10 +29,14 @@ namespace FinalProjectOfUnittest.Data.DAL
         }
         public ICollection<Ticket> GetAll()
         {
-            Context.Ticket.Include(t => t.TicketHistories)
-                          .Include(t => t.TicketComments)
-                          .Include(t => t.TicketNotifications);
-            return Context.Ticket.ToList();
+           var db = Context.Ticket.Include(t => t.TicketHistories)
+                                  .Include(t => t.TicketComments)
+                                  .Include(t => t.TicketNotifications)
+                                  .Include(t => t.TicketAttachments)
+                                  .Include(t => t.Project)
+                                  .Include(t => t.OwnerUser)
+                                  .Include(t => t.AssignedToUser);
+            return db.ToList();
         }
         public ICollection<Ticket> GetList(Func<Ticket, bool> func)
         {

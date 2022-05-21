@@ -6,7 +6,7 @@
 <h1>@ViewBag.ProjectName Tickets</h1>
 
 <p>
-    <a asp-action="Create">Submit new Ticket</a>
+    <a asp-action="Create" asp-route-projectid=@ViewBag.ProjectId>Submit new Ticket</a>
 </p>
 
 <form asp-action="Index" method="get" >
@@ -59,7 +59,11 @@
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                @if(ViewBag.UserRole == "ProjectManager"||ViewBag.UserRole =="Adminitorator")
+                {
+                    <a asp-action="AssignTicketToUser" asp-route-id="@item.Id">Assign Ticket</a>
+                        
+                }
             </td>
         </tr>
 }

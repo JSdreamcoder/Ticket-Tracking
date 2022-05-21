@@ -16,7 +16,7 @@
         
         public TicketStatus TicketStatus { get; set; }
         
-        public string? OwnerUserId { get; set; }
+        public string? OwnerUserId { get; set; } 
         public AppUser? OwnerUser { get; set; }
         public string? AssignedToUserId { get; set; }
         public AppUser? AssignedToUser { get; set; }
@@ -52,11 +52,11 @@
 
     public enum TicketTypes
     { 
-        GeneralQuestion,
-        BugReport,
-        Payment,
-        TechIssue,
-        AccountIssue
+        GeneralQuestion,  // Low
+        BugReport,        // High
+        Payment,          // Medium
+        TechIssue,        // Medium
+        AccountIssue      // High
     }
 
 

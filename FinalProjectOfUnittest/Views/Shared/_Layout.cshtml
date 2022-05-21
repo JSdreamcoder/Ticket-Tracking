@@ -1,4 +1,9 @@
-﻿<!DOCTYPE html>
+﻿@using FinalProjectOfUnittest.Data
+@using FinalProjectOfUnittest.Data.BLL
+@using FinalProjectOfUnittest.Data.DAL
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.EntityFrameworkCore
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -8,6 +13,10 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/FinalProjectOfUnittest.styles.css" asp-append-version="true" />
 </head>
+@{
+    var IsAdmin = User.IsInRole("Administrator");
+    var IsProjectManager = User.IsInRole("ProjectManager");
+}
 <body>
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
@@ -22,12 +31,18 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
+                        @if(IsAdmin || IsProjectManager)
+                        {
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Project" asp-action="Index">Project Page</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Project" asp-action="Index">Project Manager</a>
                         </li>
+                        }
+                        @if(IsAdmin)
+                        {
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="AppUser" asp-action="Index">User Controll Page</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="AppUser" asp-action="Index">User Manager</a>
                         </li>
+                        }
                     </ul>
                     <partial name="_LoginPartial" />
                 </div>
