@@ -22,6 +22,11 @@ namespace FinalProjectOfUnittest.Data.BLL
         {
             return RoleDAL.Get(firstFuction);
         }
+
+        public List<IdentityRole> GetUnassignedRoles(IList<string> userroles)
+        {
+            return GetAllRoles().Where(r => !userroles.Contains(r.ToString())).ToList();
+        }
         //SAVE FUNCTION
         public void Save()
         {

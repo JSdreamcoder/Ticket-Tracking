@@ -9,36 +9,40 @@ namespace FinalProjectOfUnittest.Data.DAL
         {
             Context = context;
         }
+        public RoleDAL()
+        {
+           
+        }
 
         //Create
-        public void Add(IdentityRole appuser)
+        public virtual void Add(IdentityRole appuser)
         {
             Context.Add(appuser);
         }
 
         //Read
-        public IdentityRole Get(string id)
+        public virtual IdentityRole GetbyId(string id)
         {
             return Context.Roles.First(a => a.Id == id);
         }
 
         //useding in Role BLL
-        public IdentityRole Get(Func<IdentityRole, bool> firstFuction)
+        public virtual IdentityRole Get(Func<IdentityRole, bool> firstFuction)
         {
             return Context.Roles.First(firstFuction);
 
         }
-        public ICollection<IdentityRole> GetAll()
+        public virtual ICollection<IdentityRole> GetAll()
         {
             return Context.Roles.ToList();
         }
-        public ICollection<IdentityRole> GetList(Func<IdentityRole, bool> func)
+        public virtual ICollection<IdentityRole> GetList(Func<IdentityRole, bool> func)
         {
             return Context.Roles.Where(func).ToList();
         }
 
         //Update
-        public void Update(IdentityRole a)
+        public virtual void Update(IdentityRole a)
         {
             Context.Update(a);
         }
