@@ -10,21 +10,31 @@ using FinalProjectOfUnittest.Models;
 using FinalProjectOfUnittest.Data.BLL;
 using FinalProjectOfUnittest.Data.DAL;
 using Assignment_QnAWeb.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace FinalProjectOfUnittest.Controllers
 {
     public class TicketController : Controller
     {
         private readonly TicketBLL ticketbll;
-
-        public TicketController(ApplicationDbContext context)
+        private readonly UserManager<AppUser> userManager;
+        public TicketController(ApplicationDbContext context,UserManager<AppUser> um)
         {
             ticketbll = new TicketBLL(new TicketDAL(context));
+            userManager = um;
         }
 
         // GET: Tickets
         public async Task<IActionResult> Index(int projectid,string projectname,string searchString, string currentFilter, int? pageNumber)
         {
+            //Get user infomation
+            var userName = User.Identity.Name;
+            AppUser user = new AppUser();
+            if (userName != null)
+            {
+                user = await userManager.FindByNameAsync(userName);
+            }
+            ViewBag.UserRole = userManager.GetRolesAsync(user);
             ViewData["CurrentFilter"] = searchString;
             ViewBag.ProjectName = projectname;
             ViewBag.projectId = projectid;
