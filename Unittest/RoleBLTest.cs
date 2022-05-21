@@ -29,7 +29,7 @@ namespace Unittest
             rolebll = new RoleBLL(repoMock.Object);
         }
         [TestMethod]
-        public void TestMethod1()
+        public void GetCounterPartRoles()
         {
            //arrange
            IList<string> assignedRoles = new List<string>();
@@ -46,6 +46,11 @@ namespace Unittest
             Assert.IsTrue(counterroles.Contains(expectedList[0]));
             Assert.IsTrue(counterroles.Contains(expectedList[1]));
 
+
+        }
+
+        public void userrolesIsNullReturnExeception()
+        {
 
         }
     }

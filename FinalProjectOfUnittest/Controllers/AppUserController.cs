@@ -2,6 +2,7 @@
 using FinalProjectOfUnittest.Data.BLL;
 using FinalProjectOfUnittest.Data.DAL;
 using FinalProjectOfUnittest.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -9,6 +10,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FinalProjectOfUnittest.Controllers
 {
+    [Authorize(Roles = "Adminitarater")]
     public class AppUserController : Controller
     {
 
@@ -48,7 +50,7 @@ namespace FinalProjectOfUnittest.Controllers
             }
 
         }
-       
+        
         //GET METHOD
         public async Task<IActionResult> AssignRoleToUser(string userid)
         {
