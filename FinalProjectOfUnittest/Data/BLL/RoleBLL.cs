@@ -25,6 +25,10 @@ namespace FinalProjectOfUnittest.Data.BLL
 
         public List<IdentityRole> GetCounterPartRoles(IList<string> userroles)
         {
+            if (userroles == null)
+            {
+                throw new ArgumentNullException("userroles never be null");
+            }
             var result = GetAllRoles().Where(r => !userroles.Contains(r.ToString())).ToList();
             return result;
         }

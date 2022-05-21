@@ -9,9 +9,12 @@ using FinalProjectOfUnittest.Data;
 using FinalProjectOfUnittest.Models;
 using FinalProjectOfUnittest.Data.BLL;
 using FinalProjectOfUnittest.Data.DAL;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FinalProjectOfUnittest.Controllers
 {
+    [Authorize(Roles = "ProjectManager")]
+    [Authorize(Roles = "Administrator")]
     public class ProjectController : Controller
     {
         private readonly ProjectBLL projectbll;
@@ -126,7 +129,8 @@ namespace FinalProjectOfUnittest.Controllers
             {
                 var project = projectbll.GetById(projectId);
                 ViewBag.Message=message;
-                //alluser who are not in project
+                //alluser who are not in project\
+ //Can catch for unitest - difficult
                 var allUsersNotInProject = userbll.GetAllUsers().Where(u => !u.ProjectUsers.Select(u => u.ProjectId).Contains(projectId));
                 var listOfusers = new SelectList(allUsersNotInProject, "Id", "UserName");
                 var newData = new ViewModel(listOfusers,project);
@@ -164,6 +168,7 @@ namespace FinalProjectOfUnittest.Controllers
                 var project = projectbll.GetById(projectid);
                 ViewBag.Message = message;
                 //alluser who are in project
+ //Can catch for unitest - difficult
                 var allUsersInProject = userbll.GetAllUsers().Where(u => u.ProjectUsers.Select(u => u.ProjectId).Contains(projectid));
                 var listOfusers = new SelectList(allUsersInProject, "Id", "UserName");
                 var newData = new ViewModel(listOfusers, project);
@@ -180,6 +185,7 @@ namespace FinalProjectOfUnittest.Controllers
         {
             try
             {
+//Can pick for unit test - easy
                 var projectToDelete = projectUserbll.Get(pu => pu.ProjectId == projectid && pu.UserId == userid);
                 projectUserbll.Delete(projectToDelete);
                 projectUserbll.Save();

@@ -46,8 +46,9 @@ namespace FinalProjectOfUnittest.Controllers
             ViewBag.ProjectId = projectid;
             ViewBag.IsProjectUser = false;
             // all users who assinged this project
-            var projectUsers = projectUserbll.GetAll().FirstOrDefault(pu=> pu.ProjectId ==projectid &&  pu.UserId == user.Id);
-            if (projectUsers != null)
+ //Unit test   - easy
+            var projectUser = projectUserbll.GetAll().FirstOrDefault(pu=> pu.ProjectId ==projectid &&  pu.UserId == user.Id);
+            if (projectUser != null)
                 ViewBag.IsProjectUser = true;
             if (searchString != null)
             {
