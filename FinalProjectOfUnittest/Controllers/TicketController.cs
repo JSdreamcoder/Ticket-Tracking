@@ -33,6 +33,9 @@ namespace FinalProjectOfUnittest.Controllers
         // GET: Tickets
         public async Task<IActionResult> Index(int projectid,string projectname,string searchString, string currentFilter, int? pageNumber)
         {
+            var userName = User.Identity.Name;
+            var user = await userManager.FindByNameAsync(userName);
+            ViewBag.UserRole = await userManager.GetRolesAsync(user);
             ViewData["CurrentFilter"] = searchString;
             ViewBag.ProjectName = projectname;
             ViewBag.projectId = projectid;
@@ -195,73 +198,105 @@ namespace FinalProjectOfUnittest.Controllers
 
                 return RedirectToAction(nameof(Index), new { projectid = project.Id, projectname = project.Name });
             }
-
-            
-
-            
-           
-        
-
-
             return View(ticket);
         }
 
-        //// GET: Tickets/Edit/5
-        //public async Task<IActionResult> Edit(int? id)
-        //{
-        //    if (id == null || _context.Ticket == null)
-        //    {
-        //        return NotFound();
-        //    }
+        public async Task<IActionResult> AssignTicketToUser(int ticketid,string? message,int dummy)
+        {
+            try
+            {
+               
+                
+                var ticket = ticketbll.GetById(ticketid);
+                var allUser = userbll.GetAllUsers();
+                var assignedUser = userbll.GetUserbyId(ticket.AssignedToUserId);
+                ViewBag.AssignedUserName = assignedUser.UserName;
+                ViewBag.Ticket = ticket;
+                ViewBag.Message = message;
+                ViewBag.ProjectId = ticket.ProjectId;
+                // prevent for selectList of users from having the users that ticket aleady assigned
+                var otherUsers = allUser.Where(u => u.Id != ticket.AssignedToUserId).ToList();
+                
+                
+                var selectlistOfUsers = new SelectList(otherUsers, "Id", "UserName");
 
-        //    var ticket = await _context.Ticket.FindAsync(id);
-        //    if (ticket == null)
-        //    {
-        //        return NotFound();
-        //    }
-        //    ViewData["AssignedToUserId"] = new SelectList(_context.AppUser, "Id", "Id", ticket.AssignedToUserId);
-        //    ViewData["OwnerUserId"] = new SelectList(_context.AppUser, "Id", "Id", ticket.OwnerUserId);
-        //    ViewData["ProjectId"] = new SelectList(_context.Project, "Id", "Id", ticket.ProjectId);
-        //    return View(ticket);
-        //}
+                return View(selectlistOfUsers);
 
-        //// POST: Tickets/Edit/5
-        //// To protect from overposting attacks, enable the specific properties you want to bind to.
-        //// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Description,Created,Updated,ProjectId,TicketType,TicketPriority,TicketStatus,OwnerUserId,AssignedToUserId")] Ticket ticket)
-        //{
-        //    if (id != ticket.Id)
-        //    {
-        //        return NotFound();
-        //    }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
 
-        //    if (ModelState.IsValid)
-        //    {
-        //        try
-        //        {
-        //            _context.Update(ticket);
-        //            await _context.SaveChangesAsync();
-        //        }
-        //        catch (DbUpdateConcurrencyException)
-        //        {
-        //            if (!TicketExists(ticket.Id))
-        //            {
-        //                return NotFound();
-        //            }
-        //            else
-        //            {
-        //                throw;
-        //            }
-        //        }
-        //        return RedirectToAction(nameof(Index));
-        //    }
-        //    ViewData["AssignedToUserId"] = new SelectList(_context.AppUser, "Id", "Id", ticket.AssignedToUserId);
-        //    ViewData["OwnerUserId"] = new SelectList(_context.AppUser, "Id", "Id", ticket.OwnerUserId);
-        //    ViewData["ProjectId"] = new SelectList(_context.Project, "Id", "Id", ticket.ProjectId);
-        //    return View(ticket);
-        //}
+        }
+
+        [HttpPost] // HTTP POST 
+        public async Task<IActionResult> AssignTicketToUser(int ticketid, string userid)
+        {
+            try
+            {
+                var ticket = ticketbll.GetById(ticketid);
+                var projectid = ticket.ProjectId;
+                ticket.AssignedToUserId = userid;
+                ticketbll.Update(ticket);
+                ticketbll.Save();
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            return RedirectToAction("AssignTicketToUser", new {ticketid = ticketid, message = "Success"});
+        }
+        // GET: Tickets/Edit/5
+        public async Task<IActionResult> Edit(int id,string? message)
+        {
+            ViewBag.Message = message;
+            if (id == null || ticketbll.GetAll() == null)
+            {
+                return NotFound();
+            }
+
+            var ticket = ticketbll.GetById(id);
+            if (ticket == null)
+            {
+                return NotFound();
+            }
+           
+            return View(ticket);
+        }
+
+        // POST: Tickets/Edit/5
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int ticketid, string title,string description,TicketTypes type)
+        {
+            var ticket = ticketbll.GetById(ticketid);
+            if (ticket == null)
+            {
+                return NotFound();
+            }
+
+           
+            try
+            {
+                ticket.Title = title;
+                ticket.Description = description;
+                ticket.TicketType = type;
+                ticketbll.Update(ticket);
+                ticketbll.Save();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            return RedirectToAction(nameof(Index), new {id = ticket.Id,message = "Success"});
+            
+          
+            
+        }
 
         //// GET: Tickets/Delete/5
         //public async Task<IActionResult> Delete(int? id)

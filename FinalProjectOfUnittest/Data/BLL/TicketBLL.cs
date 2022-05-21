@@ -29,6 +29,15 @@ namespace FinalProjectOfUnittest.Data.BLL
             return ticketDAL.GetAll(); 
         }
 
+        public Ticket GetById(int id)
+        {
+            return ticketDAL.Get(id);
+        }
+
+        public void Update(Ticket ticket)
+        {
+            ticketDAL.Update(ticket);
+        }
         public void Save()
         {
             ticketDAL.Save();

@@ -25,7 +25,7 @@ namespace FinalProjectOfUnittest.Data.DAL
         public AppUser Get(Func<AppUser, bool> firstFuction)
         {
             var allusers = Context.AppUser.Include(u => u.ProjectUsers);
-            return Context.AppUser.First(firstFuction);
+            return Context.AppUser.FirstOrDefault(firstFuction);
             
         }
         public ICollection<AppUser> GetAll()
