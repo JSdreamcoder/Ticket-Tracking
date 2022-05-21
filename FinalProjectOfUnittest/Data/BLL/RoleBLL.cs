@@ -22,6 +22,12 @@ namespace FinalProjectOfUnittest.Data.BLL
         {
             return RoleDAL.Get(firstFuction);
         }
+
+        public List<IdentityRole> GetCounterPartRoles(IList<string> userroles)
+        {
+            var result = GetAllRoles().Where(r => !userroles.Contains(r.ToString())).ToList();
+            return result;
+        }
         //SAVE FUNCTION
         public void Save()
         {
