@@ -28,9 +28,10 @@ namespace FinalProjectOfUnittest.Data.BLL
             return AppUserDAL.GetAll();//check GETALL in AppUserDal line29
         }
 
-        public AppUser Get(Func<AppUser, bool> firstFuction)
+        public AppUser Get(Func<AppUser, bool> firstFunction)
         {
-            return AppUserDAL.Get(firstFuction);//get data from DAL to BLL
+            
+            return AppUserDAL.Get(firstFunction);//get data from DAL to BLL
         }
 
         public void Save()

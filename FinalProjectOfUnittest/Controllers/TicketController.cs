@@ -21,21 +21,34 @@ namespace FinalProjectOfUnittest.Controllers
         private readonly AppUserBLL userbll;
         private readonly ProjectBLL projectbll;
         private readonly TicketAttachmentBLL ticketAttachmentBLL;
+        private readonly ProjectUserBLL projectUserbll;
         public TicketController(ApplicationDbContext context,UserManager<AppUser> um)
         {
             ticketbll = new TicketBLL(new TicketDAL(context));
             userbll = new AppUserBLL(new AppUserDAL(context));
             projectbll = new ProjectBLL(new ProjectDAL(context));
             ticketAttachmentBLL = new TicketAttachmentBLL(new TicketAttachmentDAL(context));
+            projectUserbll = new ProjectUserBLL(new ProjectUserDAL(context));
             userManager = um;
         }
         
         // GET: Tickets
         public async Task<IActionResult> Index(int projectid,string projectname,string searchString, string currentFilter, int? pageNumber)
         {
+            var userName = User.Identity.Name;
+            var user = new AppUser();
+            if (userName != null)
+              user = await userManager.FindByNameAsync(userName);
+            ViewBag.UserRole = await userManager.GetRolesAsync(user);
+            ViewBag.UserId = user.Id;
             ViewData["CurrentFilter"] = searchString;
             ViewBag.ProjectName = projectname;
-            ViewBag.projectId = projectid;
+            ViewBag.ProjectId = projectid;
+            ViewBag.IsProjectUser = false;
+            // all users who assinged this project
+            var projectUsers = projectUserbll.GetAll().FirstOrDefault(pu=> pu.ProjectId ==projectid &&  pu.UserId == user.Id);
+            if (projectUsers != null)
+                ViewBag.IsProjectUser = true;
             if (searchString != null)
             {
                 pageNumber = 1;
@@ -144,21 +157,7 @@ namespace FinalProjectOfUnittest.Controllers
             //Payment,          // Medium
             //TechIssue,        // Medium
             //AccountIssue      // High
-            switch (ticket.TicketType)
-            {
-                case TicketTypes.BugReport :
-                    ticket.TicketPriority = TicketPriorities.High;
-                    break;
-                case TicketTypes.Payment:
-                    ticket.TicketPriority = TicketPriorities.Medium;
-                    break;
-                case TicketTypes.TechIssue :
-                    ticket.TicketPriority = TicketPriorities.Medium;
-                    break ;
-                case TicketTypes.AccountIssue :
-                    ticket.TicketPriority = TicketPriorities.High;
-                    break ;
-            }
+            ticket = SetTicketPriority(ticket);
 
             if (ModelState.IsValid)
             {
@@ -195,73 +194,108 @@ namespace FinalProjectOfUnittest.Controllers
 
                 return RedirectToAction(nameof(Index), new { projectid = project.Id, projectname = project.Name });
             }
-
-            
-
-            
-           
-        
-
-
             return View(ticket);
         }
 
-        //// GET: Tickets/Edit/5
-        //public async Task<IActionResult> Edit(int? id)
-        //{
-        //    if (id == null || _context.Ticket == null)
-        //    {
-        //        return NotFound();
-        //    }
+        public async Task<IActionResult> AssignTicketToUser(int ticketid,string? message,int dummy)
+        {
+            try
+            {
+               
+                
+                var ticket = ticketbll.GetById(ticketid);
+                var allUser = userbll.GetAllUsers();
+                var assignedUser = userbll.GetUserbyId(ticket.AssignedToUserId);
+                ViewBag.AssignedUserName = assignedUser.UserName;
+                ViewBag.Ticket = ticket;
+                ViewBag.Message = message;
+                ViewBag.ProjectId = ticket.ProjectId;
+                // prevent for selectList of users from having the users that ticket aleady assigned
+                var otherUsers = allUser.Where(u => u.Id != ticket.AssignedToUserId).ToList();
+                
+                
+                var selectlistOfUsers = new SelectList(otherUsers, "Id", "UserName");
 
-        //    var ticket = await _context.Ticket.FindAsync(id);
-        //    if (ticket == null)
-        //    {
-        //        return NotFound();
-        //    }
-        //    ViewData["AssignedToUserId"] = new SelectList(_context.AppUser, "Id", "Id", ticket.AssignedToUserId);
-        //    ViewData["OwnerUserId"] = new SelectList(_context.AppUser, "Id", "Id", ticket.OwnerUserId);
-        //    ViewData["ProjectId"] = new SelectList(_context.Project, "Id", "Id", ticket.ProjectId);
-        //    return View(ticket);
-        //}
+                return View(selectlistOfUsers);
 
-        //// POST: Tickets/Edit/5
-        //// To protect from overposting attacks, enable the specific properties you want to bind to.
-        //// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Description,Created,Updated,ProjectId,TicketType,TicketPriority,TicketStatus,OwnerUserId,AssignedToUserId")] Ticket ticket)
-        //{
-        //    if (id != ticket.Id)
-        //    {
-        //        return NotFound();
-        //    }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
 
-        //    if (ModelState.IsValid)
-        //    {
-        //        try
-        //        {
-        //            _context.Update(ticket);
-        //            await _context.SaveChangesAsync();
-        //        }
-        //        catch (DbUpdateConcurrencyException)
-        //        {
-        //            if (!TicketExists(ticket.Id))
-        //            {
-        //                return NotFound();
-        //            }
-        //            else
-        //            {
-        //                throw;
-        //            }
-        //        }
-        //        return RedirectToAction(nameof(Index));
-        //    }
-        //    ViewData["AssignedToUserId"] = new SelectList(_context.AppUser, "Id", "Id", ticket.AssignedToUserId);
-        //    ViewData["OwnerUserId"] = new SelectList(_context.AppUser, "Id", "Id", ticket.OwnerUserId);
-        //    ViewData["ProjectId"] = new SelectList(_context.Project, "Id", "Id", ticket.ProjectId);
-        //    return View(ticket);
-        //}
+        }
+
+        [HttpPost] // HTTP POST 
+        public async Task<IActionResult> AssignTicketToUser(int ticketid, string userid)
+        {
+            try
+            {
+                var ticket = ticketbll.GetById(ticketid);
+                var projectid = ticket.ProjectId;
+                ticket.AssignedToUserId = userid;
+                ticketbll.Update(ticket);
+                ticketbll.Save();
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            return RedirectToAction("AssignTicketToUser", new {ticketid = ticketid, message = "Success"});
+        }
+        // GET: Tickets/Edit/5
+        public async Task<IActionResult> Edit(int id,string? message)
+        {
+            ViewBag.Message = message;
+            if (id == null || ticketbll.GetAll() == null)
+            {
+                return NotFound();
+            }
+
+            var ticket = ticketbll.GetById(id);
+            ViewBag.ProjectId = ticket.ProjectId;
+            if (ticket == null)
+            {
+                return NotFound();
+            }
+           
+            return View(ticket);
+        }
+
+        // POST: Tickets/Edit/5
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int ticketid, [Bind("Id,Title,Description,TicketType")] Ticket newticket)
+        {
+            var originalticket = ticketbll.GetById(newticket.Id);
+            if (originalticket == null)
+            {
+                return NotFound();
+            }
+
+           
+            try
+            {
+                originalticket.Title = newticket.Title;
+                originalticket.Description = newticket.Description;
+                originalticket.TicketType = newticket.TicketType;
+                originalticket.Updated = DateTime.Now;
+                originalticket = SetTicketPriority(originalticket);
+                ticketbll.Update(originalticket);
+                ticketbll.Save();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            return RedirectToAction(nameof(Edit), new {id = originalticket.Id,message = "Success"});
+            
+          
+            
+        }
 
         //// GET: Tickets/Delete/5
         //public async Task<IActionResult> Delete(int? id)
@@ -312,6 +346,35 @@ namespace FinalProjectOfUnittest.Controllers
         {
             ViewBag.Message = message;
             return View();
+        }
+
+        public Ticket SetTicketPriority(Ticket ticket)
+        {
+            //GeneralQuestion,  // Low  - default value
+            //BugReport,        // High
+            //Payment,          // Medium
+            //TechIssue,        // Medium
+            //AccountIssue      // High
+            switch (ticket.TicketType)
+            {
+                case TicketTypes.BugReport:
+                    ticket.TicketPriority = TicketPriorities.High;
+                    break;
+                case TicketTypes.Payment:
+                    ticket.TicketPriority = TicketPriorities.Medium;
+                    break;
+                case TicketTypes.TechIssue:
+                    ticket.TicketPriority = TicketPriorities.Medium;
+                    break;
+                case TicketTypes.AccountIssue:
+                    ticket.TicketPriority = TicketPriorities.High;
+                    break;
+                case TicketTypes.GeneralQuestion:
+                    ticket.TicketPriority = TicketPriorities.Low;
+                    break;
+            }
+
+            return ticket;
         }
     }
 }

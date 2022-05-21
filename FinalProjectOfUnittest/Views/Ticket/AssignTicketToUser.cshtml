@@ -1,0 +1,17 @@
+﻿@model SelectList
+
+
+<h1>Assign Ticket To User</h1>
+
+<h3>Ticket Name : @ViewBag.Ticket.Title</h3>
+<h4>
+    Assined User : @ViewBag.AssignedUserName
+</h4>
+<div>
+<form method="post" asp-action="AssignTicketToUser" asp-route-ticketid=@ViewBag.Ticket.Id>
+<select name="userid" asp-items=Model ><option>Please Select One</option></select>
+<button type="submit">Submit</button>
+</form>
+</div>
+<h4>@ViewBag.Message</h4>
+<a asp-action="Index" asp-route-projectid=@ViewBag.ProjectId>Bact To Ticket List</a>
