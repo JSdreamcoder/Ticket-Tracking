@@ -59,7 +59,8 @@ namespace FinalProjectOfUnittest.Controllers
                 var allRoles = rolebll.GetAllRoles();//Need to use RoleDal
 
                 // prevent selectList of roles have the roles that user aleady have
-                var otherRoles = allRoles.Where(r => !userRoles.Contains(r.ToString())).ToList();
+               //var otherRoless = allRoles.Where(r => !userRoles.Contains(r.ToString())).ToList();
+                 var otherRoles = rolebll.GetCounterPartRoles(userRoles);
 
                 ViewBag.User = user;
                 ViewBag.UserRoles = await userManager.GetRolesAsync(user);
