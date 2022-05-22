@@ -13,8 +13,8 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace FinalProjectOfUnittest.Controllers
 {
-    [Authorize(Roles = "ProjectManager")]
-    [Authorize(Roles = "Administrator")]
+    [Authorize(Roles = "ProjectManager,Administrator")]
+    
     public class ProjectController : Controller
     {
         private readonly ProjectBLL projectbll;
