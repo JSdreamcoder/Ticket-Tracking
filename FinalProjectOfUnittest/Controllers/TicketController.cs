@@ -17,12 +17,14 @@ namespace FinalProjectOfUnittest.Controllers
 {
     public class TicketController : Controller
     {
+        private readonly UserManager<AppUser> userManager;
         private readonly TicketBLL ticketbll;
-        private readonly UserManager<AppUser> userManager;  
         private readonly AppUserBLL userbll;
         private readonly ProjectBLL projectbll;
         private readonly TicketAttachmentBLL ticketAttachmentBLL;
         private readonly ProjectUserBLL projectUserbll;
+        private readonly TIcketCommentBLL ticketCommentbll;
+        
         public TicketController(ApplicationDbContext context,UserManager<AppUser> um)
         {
             ticketbll = new TicketBLL(new TicketDAL(context));
@@ -30,6 +32,7 @@ namespace FinalProjectOfUnittest.Controllers
             projectbll = new ProjectBLL(new ProjectDAL(context));
             ticketAttachmentBLL = new TicketAttachmentBLL(new TicketAttachmentDAL(context));
             projectUserbll = new ProjectUserBLL(new ProjectUserDAL(context));
+            ticketCommentbll = new TIcketCommentBLL(new TicketCommentDAL(context));
             userManager = um;
         }
         
@@ -78,7 +81,7 @@ namespace FinalProjectOfUnittest.Controllers
             {
                 return NotFound();
             }
-
+            
             var ticket = ticketbll.GetAll()
                 .FirstOrDefault(m => m.Id == id);
             var filePaths = ticket.TicketAttachments.Select(t=>t.FilePath).ToList();
@@ -101,6 +104,27 @@ namespace FinalProjectOfUnittest.Controllers
             byte[] fileBytes = System.IO.File.ReadAllBytes(filePath);
             string fileName = Path.GetFileName(filePath);
             return File(fileBytes, System.Net.Mime.MediaTypeNames.Application.Octet, fileName);
+        }
+        [HttpPost]
+        public IActionResult CreateComment(int ticketid, string comment)
+        {
+            try
+            {
+                var userName = User.Identity.Name;
+                var user = userbll.Get(u => u.UserName == userName);
+                var newComment = new TicketComment();
+                newComment.Comment = comment;
+                newComment.TicketId = ticketid;
+                newComment.UserId = user.Id;
+                newComment.Created = DateTime.Now;
+                ticketCommentbll.Add(newComment);
+                ticketCommentbll.Save();
+                return RedirectToAction("Details", new { id = ticketid });
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
         }
 
         //public IActionResult UpLoad()

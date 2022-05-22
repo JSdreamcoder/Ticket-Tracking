@@ -7,6 +7,10 @@
 
 <div>
     <h4>Ticket</h4>
+    <div>
+    <a asp-action="Edit" asp-route-id="@Model.ticket1?.Id">Edit Tikcet</a> |
+    <a asp-action="Index" asp-route-projectid=@Model.ticket1.Project.Id asp-route-projectname=@Model.ticket1.Project.Name>Back to List</a>
+</div>
     <hr />
     <dl class="row">
         <dt class = "col-sm-2">
@@ -88,7 +92,22 @@
         </dd>
     </dl>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model.ticket1?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+
+
+<h4>Comment</h4>
+<hr />
+@foreach(var comment in Model.ticket1.TicketComments)
+{
+  <p>
+     @comment.Comment
+  </p>
+  <p style="font-size:1.3vw">written by @comment.User.UserName</p>
+  <hr />
+}
+
+<form asp-action="CreateComment" asp-route-ticketid=@Model.ticket1.Id>
+    <textarea cols="50" name="comment" placeholder="Comment"></textarea></br>
+    <button type="submit">Submit Comment</button>
+</form>
+
+

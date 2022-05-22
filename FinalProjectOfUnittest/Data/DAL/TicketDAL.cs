@@ -20,7 +20,14 @@ namespace FinalProjectOfUnittest.Data.DAL
         //Read
         public Ticket Get(int id)
         {
-            return Context.Ticket.First(a => a.Id == id);
+            var db = Context.Ticket.Include(t => t.TicketHistories)
+                                  .Include(t => t.TicketComments).ThenInclude(c=>c.User)
+                                  .Include(t => t.TicketNotifications)
+                                  .Include(t => t.TicketAttachments)
+                                  .Include(t => t.Project)
+                                  .Include(t => t.OwnerUser)
+                                  .Include(t => t.AssignedToUser);
+            return db.First(a => a.Id == id);
         }
         public Ticket Get(Func<Ticket, bool> firstFuction)
         {
@@ -30,7 +37,7 @@ namespace FinalProjectOfUnittest.Data.DAL
         public ICollection<Ticket> GetAll()
         {
            var db = Context.Ticket.Include(t => t.TicketHistories)
-                                  .Include(t => t.TicketComments)
+                                  .Include(t => t.TicketComments).ThenInclude(c => c.User)
                                   .Include(t => t.TicketNotifications)
                                   .Include(t => t.TicketAttachments)
                                   .Include(t => t.Project)
