@@ -203,11 +203,13 @@ namespace FinalProjectOfUnittest.Controllers
         {
             try
             {
-                //var alluser = userbll.Get
+                var allusers = userbll.GetAllUsers().ToList();
+                var AllSubmmiters = await userManager.GetUsersInRoleAsync("Submitter");
+                var AllDeveloper = await userManager.GetUsersInRoleAsync("Developer");
+                var AllProjectManager = await userManager.GetUsersInRoleAsync("ProjectManager");
+                var AllAdmins = await userManager.GetUsersInRoleAsync("Administrator");
                 
                 var ticket = ticketbll.GetById(ticketid);
-                
-                
                 var assignedUser = userbll.GetUserbyId(ticket.AssignedToUserId);
                 ViewBag.AssignedUserName = assignedUser.UserName;
                 ViewBag.Ticket = ticket;
@@ -216,11 +218,20 @@ namespace FinalProjectOfUnittest.Controllers
                 // prevent for selectList of users from having the users that ticket aleady assigned
                 var loginedUserName = User.Identity.Name;
                 var loginedUser = userbll.Get(u=>u.UserName == loginedUserName);
-                var otherUsers = new List<AppUser>();
-                
+                // divide Seleclist users depends on User Role
+                var SelecListUsers = new List<AppUser>();
+                if (User.IsInRole("Administrator"))
+                {
+                    SelecListUsers = allusers.Except(AllSubmmiters).Where(u => u.Id != assignedUser.Id).ToList();
+
+                }
+                else if (User.IsInRole("ProjectManager"))
+                {
+                    SelecListUsers = AllDeveloper.Where(u=>u.Id != assignedUser.Id).ToList(); 
+                }
 
 
-                var selectlistOfUsers = new SelectList(otherUsers, "Id", "UserName");
+                    var selectlistOfUsers = new SelectList(SelecListUsers, "Id", "UserName");
                
 
                 return View(selectlistOfUsers);

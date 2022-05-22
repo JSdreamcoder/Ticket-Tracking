@@ -1,15 +1,21 @@
 ﻿using FinalProjectOfUnittest.Data.DAL;
 using FinalProjectOfUnittest.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace FinalProjectOfUnittest.Data.BLL
 {
     public class AppUserBLL
     {
         public AppUserDAL AppUserDAL;
-        
+        public UserManager<AppUser> userManager;
         public AppUserBLL(AppUserDAL adal)
         {
             AppUserDAL = adal;
+        }
+        public AppUserBLL(AppUserDAL adal,UserManager<AppUser> um)
+        {
+            AppUserDAL = adal;
+            userManager = um;
         }
 
         public AppUser GetUserbyId(string Id)
@@ -33,6 +39,8 @@ namespace FinalProjectOfUnittest.Data.BLL
             
             return AppUserDAL.Get(firstFunction);//get data from DAL to BLL
         }
+
+      
 
         public void Save()
         {

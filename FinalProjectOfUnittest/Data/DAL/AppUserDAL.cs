@@ -31,6 +31,7 @@ namespace FinalProjectOfUnittest.Data.DAL
         }
         public ICollection<AppUser> GetAll()
         {
+            
             return Context.AppUser.ToList();//convert the type from database to list
         }
         public ICollection<AppUser> GetList(Func<AppUser, bool> func)
