@@ -3,6 +3,7 @@ using FinalProjectOfUnittest.Models;
 
 namespace FinalProjectOfUnittest.Data.BLL
 {
+
     public class TicketNotificationBLL
     {
         public TicketNotificationDAL ticketNotificationDAL;
