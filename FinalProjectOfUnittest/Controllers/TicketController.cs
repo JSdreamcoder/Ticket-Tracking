@@ -11,6 +11,7 @@ using FinalProjectOfUnittest.Data.BLL;
 using FinalProjectOfUnittest.Data.DAL;
 using Assignment_QnAWeb.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FinalProjectOfUnittest.Controllers
 {
@@ -197,7 +198,7 @@ namespace FinalProjectOfUnittest.Controllers
             }
             return View(ticket);
         }
-
+        [Authorize(Roles ="Administrator")]
         public async Task<IActionResult> AssignTicketToUser(int ticketid,string? message,int dummy)
         {
             try
