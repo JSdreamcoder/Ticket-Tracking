@@ -39,7 +39,6 @@
     {
         Submitted,
         Assigned,
-        Progressing,
         Completed
     }
 

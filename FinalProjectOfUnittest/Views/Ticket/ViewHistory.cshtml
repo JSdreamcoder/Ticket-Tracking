@@ -1,0 +1,47 @@
+﻿@model List<FinalProjectOfUnittest.Models.TicketHistory>
+
+@{
+    ViewData["Title"] = "ViewHistory";
+}
+
+<h1>History of ticket : @ViewBag.TicketName </h1>
+<a asp-action="Details" asp-route-id=@ViewBag.TicketId>Back to Details</a>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Changed List
+            </th>
+            <th>
+                Changed Date
+            </th>
+            <th>
+                User Name
+            </th>
+            <th>
+                View Ticket Log
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Property)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Changed)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.User.UserName)
+            </td>
+            <td>
+                <a asp-action="ViewTicketLog" asp-route-ticketlogid =@item.TicketLogItem.Id asp-route-ticketid=@item.TicketId>Ticket Log</a>
+            </td>
+           
+        </tr>
+}
+    </tbody>
+</table>
