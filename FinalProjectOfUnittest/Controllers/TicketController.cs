@@ -24,6 +24,8 @@ namespace FinalProjectOfUnittest.Controllers
         private readonly TicketAttachmentBLL ticketAttachmentBLL;
         private readonly ProjectUserBLL projectUserbll;
         private readonly TIcketCommentBLL ticketCommentbll;
+        private readonly TicketHistoryBLL ticketHistoryBLL;
+        private readonly TicketLogItemBLL ticketLogItemBLL;
         
         public TicketController(ApplicationDbContext context,UserManager<AppUser> um)
         {
@@ -33,6 +35,8 @@ namespace FinalProjectOfUnittest.Controllers
             ticketAttachmentBLL = new TicketAttachmentBLL(new TicketAttachmentDAL(context));
             projectUserbll = new ProjectUserBLL(new ProjectUserDAL(context));
             ticketCommentbll = new TIcketCommentBLL(new TicketCommentDAL(context));
+            ticketHistoryBLL = new TicketHistoryBLL(new TicketHistoryDAL(context));
+            ticketLogItemBLL = new TicketLogItemBLL(new TicketLogItemDAL(context));
             userManager = um;
         }
         
@@ -63,11 +67,25 @@ namespace FinalProjectOfUnittest.Controllers
                 searchString = currentFilter;
             }
             var Tickets = ticketbll.GetAll().Where(t=>t.ProjectId==projectid);
-
+            var TicketsWithAssinedUser = ticketbll.GetList(t=>t.AssignedToUserId != null);
             // For Searching
+           
             if (!String.IsNullOrEmpty(searchString))
             {
-               Tickets = Tickets.Where(t=>t.Title.ToLower().Contains(searchString.ToLower())).ToList();
+                var testList = new List<Ticket>();
+               var SortedByTitle = Tickets.Where(t=>t.Title.ToLower().Contains(searchString.ToLower())).ToList();
+
+                var SortedByOwner = Tickets.Where(t => t.OwnerUser.UserName.ToLower().Contains(searchString.ToLower())).ToList();
+
+                
+                var SortedByAssignedUser= TicketsWithAssinedUser.Where(t => t.AssignedToUser.UserName.ToLower().Contains(searchString.ToLower())).ToList();
+
+
+                Tickets = SortedByTitle.Concat(SortedByOwner)
+                                         .Concat(SortedByAssignedUser)
+                                         .ToList();
+             
+
             }
             // For paging
             int pageSize = 10;
@@ -98,7 +116,18 @@ namespace FinalProjectOfUnittest.Controllers
             var ticketAndfilePaths = new ViewModel(filePaths,fileNames ,ticket);
             return View(ticketAndfilePaths);
         }
-
+        public IActionResult ViewHistory(int ticketid)
+        {
+            var ticket = ticketbll.GetById(ticketid);
+            ViewBag.TicketName = ticket.Title;
+            ViewBag.TicketId = ticketid;
+            return View(ticketHistoryBLL.GetList(t=>t.TicketId==ticketid).ToList());
+        }
+        public IActionResult ViewTicketLog(int ticketlogid, int ticketid)
+        {
+            ViewBag.TicketId = ticketid;
+            return View(ticketLogItemBLL.GetById(ticketlogid));
+        }
         public FileResult Download(string filePath)
         {
             byte[] fileBytes = System.IO.File.ReadAllBytes(filePath);
@@ -273,11 +302,52 @@ namespace FinalProjectOfUnittest.Controllers
         {
             try
             {
+                //Getting Ticket
                 var ticket = ticketbll.GetById(ticketid);
-                var projectid = ticket.ProjectId;
+
+                //Getting User
+                var LoginedUserName = User.Identity.Name;
+                var LoginedUser = userbll.Get(u => u.UserName == LoginedUserName);
+
+                //Getting Time now
+                var NowTime = DateTime.Now;
+
+                //Making Ticket History
+                var ticketHistory = new TicketHistory();
+                ticketHistory.Property = $"AssignedToUserId({userid}),Updated({NowTime}),TicketStatus({TicketStatus.Assigned})";
+                ticketHistory.Changed = NowTime; // .Value makes equal corecctly between nullable and non nullable 
+                ticketHistory.UserId = LoginedUser.Id;
+                ticketHistory.TicketId = ticketid;
+                ticketHistoryBLL.Add(ticketHistory);
+                ticketHistoryBLL.Save();
+
+                //Making TicketLogItem
+                var ticketLogItem = new TicketLogItem();
+                ticketLogItem.TicketHistoryId = ticketHistory.Id;
+                ticketLogItem.Title = ticket.Title;
+                ticketLogItem.Description = ticket.Description;
+                ticketLogItem.Created = ticket.Created;
+                ticketLogItem.Updated = NowTime;
+                ticketLogItem.ProjectId = ticket.ProjectId;
+                ticketLogItem.TicketType = ticket.TicketType;
+                ticketLogItem.OwnerUserId = ticket.OwnerUserId;
+                ticketLogItem.AssignedToUserId = ticket.AssignedToUserId;
+                ticketLogItemBLL.Add(ticketLogItem);
+                ticketLogItemBLL.Save();
+
+                //Making ticket
                 ticket.AssignedToUserId = userid;
+                ticket.Updated = NowTime;
+                ticket.TicketStatus = TicketStatus.Assigned;
                 ticketbll.Update(ticket);
                 ticketbll.Save();
+
+                
+
+                
+
+                
+
 
             }
             catch (Exception ex)
@@ -310,30 +380,72 @@ namespace FinalProjectOfUnittest.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int ticketid, [Bind("Id,Title,Description,TicketType")] Ticket newticket)
+        public async Task<IActionResult> Edit(int ticketid, [Bind("Id,Title,Description,TicketType")] Ticket ticketinfo)
         {
-            var originalticket = ticketbll.GetById(newticket.Id);
-            if (originalticket == null)
+            string changedpropety = "";
+            var ticket = ticketbll.GetById(ticketinfo.Id);
+            if (ticket == null)
             {
                 return NotFound();
+            }
+            if(ticketinfo.Title != ticket.Title)
+                changedpropety = $"Title({ticketinfo.Title}";
+            if (ticketinfo.Description != ticket.Description)
+                changedpropety = changedpropety + $",Desciption({ticketinfo.Description})";
+            if (ticketinfo.TicketType != ticket.TicketType)
+            {
+                changedpropety = changedpropety + $",TicketType({ticketinfo.TicketType})";
             }
 
            
             try
             {
-                originalticket.Title = newticket.Title;
-                originalticket.Description = newticket.Description;
-                originalticket.TicketType = newticket.TicketType;
-                originalticket.Updated = DateTime.Now;
-                originalticket = SetTicketPriority(originalticket);
-                ticketbll.Update(originalticket);
+                //Getting User
+                var LoginedUserName = User.Identity.Name;
+                var LoginedUser = userbll.Get(u => u.UserName == LoginedUserName);
+
+                //Getting Time now
+                var NowTime = DateTime.Now;
+
+                //Making Ticket History
+                var ticketHistory = new TicketHistory();
+                ticketHistory.Property = changedpropety + $",Updated({NowTime})";
+                ticketHistory.Changed = NowTime; // .Value makes equal corecctly between nullable and non nullable 
+                ticketHistory.UserId = LoginedUser.Id;
+                ticketHistory.TicketId = ticketinfo.Id;
+                ticketHistoryBLL.Add(ticketHistory);
+                ticketHistoryBLL.Save();
+
+                //Making TicketLogItem
+                var ticketLogItem = new TicketLogItem();
+                ticketLogItem.TicketHistoryId = ticketHistory.Id;
+                ticketLogItem.Title = ticket.Title;
+                ticketLogItem.Description = ticket.Description;
+                ticketLogItem.Created = ticket.Created;
+                ticketLogItem.Updated = NowTime;
+                ticketLogItem.ProjectId = ticket.ProjectId;
+                ticketLogItem.TicketType = ticket.TicketType;
+                ticketLogItem.TicketStatus = ticket.TicketStatus;
+                ticketLogItem.TicketPriority = ticket.TicketPriority;
+                ticketLogItem.OwnerUserId = ticket.OwnerUserId;
+                ticketLogItem.AssignedToUserId = ticket.AssignedToUserId;
+                ticketLogItemBLL.Add(ticketLogItem);
+                ticketLogItemBLL.Save();
+
+
+                ticket.Title = ticketinfo.Title;
+                ticket.Description = ticketinfo.Description;
+                ticket.TicketType = ticketinfo.TicketType;
+                ticket.Updated = DateTime.Now;
+                ticket = SetTicketPriority(ticket);
+                ticketbll.Update(ticket);
                 ticketbll.Save();
             }
             catch (Exception ex)
             {
                 throw new Exception(ex.Message);
             }
-            return RedirectToAction(nameof(Edit), new {id = originalticket.Id,message = "Success"});
+            return RedirectToAction(nameof(Edit), new {id = ticket.Id,message = "Success"});
             
           
             

@@ -19,6 +19,8 @@ namespace FinalProjectOfUnittest.Data
         public DbSet<TicketHistory> TicketHistory { get; set; }
         public DbSet<TicketNotification> TicketNotification { get; set; }
 
+        public DbSet<TicketLogItem> TicketLogItem { get; set; }
+
     }
    
 }

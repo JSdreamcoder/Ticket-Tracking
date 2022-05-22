@@ -1,0 +1,84 @@
+﻿@model FinalProjectOfUnittest.Models.TicketLogItem
+
+@{
+    ViewData["Title"] = "ViewTicketLog";
+}
+
+<h1>ViewTicketLog</h1>
+
+<div>
+    <h4>TicketLogItem</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.TicketHistory)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.TicketHistory.Id)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Title)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Title)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Description)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Description)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Created)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Created)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Updated)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Updated)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.ProjectId)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.ProjectId)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.TicketType)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.TicketType)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.TicketPriority)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.TicketPriority)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.TicketStatus)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.TicketStatus)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.OwnerUserId)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.OwnerUserId)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.AssignedToUserId)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.AssignedToUserId)
+        </dd>
+    </dl>
+</div>
+<div>
+    
+    <a asp-action="ViewHistory" asp-route-ticketid=@ViewBag.TicketId>Back to List</a>
+</div>

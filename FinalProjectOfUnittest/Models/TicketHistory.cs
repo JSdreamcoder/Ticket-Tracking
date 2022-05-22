@@ -6,8 +6,7 @@
         
         public string Property { get; set; }
 
-        public string OldValue { get; set; }
-        public string NewValue { get; set; }
+       
         public DateTime Changed { get; set; }
 
         public string UserId { get; set; }
@@ -15,5 +14,7 @@
 
         public int TicketId { get; set; }
         public Ticket? Ticket { get; set; }
+
+        public TicketLogItem TicketLogItem { get; set; }
     }
 }

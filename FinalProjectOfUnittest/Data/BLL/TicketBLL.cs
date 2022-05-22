@@ -33,7 +33,10 @@ namespace FinalProjectOfUnittest.Data.BLL
         {
             return ticketDAL.Get(id);
         }
-
+        public ICollection<Ticket> GetList(Func<Ticket, bool> func)
+        {
+            return ticketDAL.GetList(func);
+        }
         public void Update(Ticket ticket)
         {
             ticketDAL.Update(ticket);

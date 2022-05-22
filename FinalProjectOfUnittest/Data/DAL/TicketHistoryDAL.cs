@@ -1,4 +1,5 @@
 ﻿using FinalProjectOfUnittest.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace FinalProjectOfUnittest.Data.DAL
 {
@@ -28,11 +29,15 @@ namespace FinalProjectOfUnittest.Data.DAL
         }
         public ICollection<TicketHistory> GetAll()
         {
-            return Context.TicketHistory.ToList();
+            var db = Context.TicketHistory.Include(t => t.TicketLogItem)
+                                          .Include(t=> t.Ticket);
+            return db.ToList();
         }
         public ICollection<TicketHistory> GetList(Func<TicketHistory, bool> func)
         {
-            return Context.TicketHistory.Where(func).ToList();
+            var db = Context.TicketHistory.Include(t => t.TicketLogItem)
+                                         .Include(t => t.Ticket);
+            return db.Where(func).ToList();
         }
 
         //Update

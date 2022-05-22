@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FinalProjectOfUnittest.Controllers
 {
-    [Authorize(Roles = "Adminitarater")]
+    [Authorize(Roles = "Administrator")]
     public class AppUserController : Controller
     {
 

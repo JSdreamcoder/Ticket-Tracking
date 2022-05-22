@@ -1,12 +1,22 @@
 ﻿@model ViewModel
 @{
     ViewData["Title"] = "Details";
+    var isDeveloper = User.IsInRole("Developer");
+    var isProjectManager = User.IsInRole("ProjectManager");
+    var isAdmin = User.IsInRole("Administrator");
 }
 
 <h1>Details</h1>
 
 <div>
+    <div>
     <h4>Ticket</h4>
+    @if(isDeveloper || isAdmin || isProjectManager)
+        {
+        <a asp-action="ViewHistory" asp-route-ticketid=@Model.ticket1.Id>Ticket History</a>
+           
+        }
+    </div>
     <div>
     <a asp-action="Edit" asp-route-id="@Model.ticket1?.Id">Edit Tikcet</a> |
     <a asp-action="Index" asp-route-projectid=@Model.ticket1.Project.Id asp-route-projectname=@Model.ticket1.Project.Name>Back to List</a>
@@ -86,7 +96,7 @@
                 }
             @foreach(var path in Model.stringList)
             {
-                <a asp-action="Download"  class="btn btn-info" asp-route-filePath=@path>@Model.stringList2[i]</a>   
+                <a asp-action="Download"  class="btn btn-outline-info btn-sm" asp-route-filePath=@path>@Model.stringList2[i]</a>   
                 i++;
             }
         </dd>
