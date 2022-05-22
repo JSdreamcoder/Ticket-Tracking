@@ -3,6 +3,7 @@ using FinalProjectOfUnittest.Data.DAL;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -48,10 +49,29 @@ namespace Unittest
 
 
         }
-
+        [TestMethod]
         public void userrolesIsNullReturnExeception()
         {
+            //Arrange
+            IList<string> testuserroll = null;
 
+            //Act
+            //rolebll.GetCounterPartRoles(testuserroll);
+
+            //Act and Assert
+            Assert.ThrowsException<ArgumentNullException>(() => rolebll.GetCounterPartRoles(testuserroll));
+        }
+        [TestMethod]
+        public void userrolesIs0ReturnExeception()
+        {
+            //Arrange
+            IList<string> testuserroll = new List<string>();
+
+            //Act
+            //rolebll.GetCounterPartRoles(testuserroll);
+
+            //Act and Assert
+            Assert.ThrowsException<ArgumentNullException>(() => rolebll.GetCounterPartRoles(testuserroll));
         }
     }
 }

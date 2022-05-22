@@ -198,25 +198,30 @@ namespace FinalProjectOfUnittest.Controllers
             }
             return View(ticket);
         }
-        [Authorize(Roles ="Administrator")]
+        [Authorize(Roles ="Administrator,ProjectManager")]
         public async Task<IActionResult> AssignTicketToUser(int ticketid,string? message,int dummy)
         {
             try
             {
-               
+                //var alluser = userbll.Get
                 
                 var ticket = ticketbll.GetById(ticketid);
-                var allUser = userbll.GetAllUsers();
+                
+                
                 var assignedUser = userbll.GetUserbyId(ticket.AssignedToUserId);
                 ViewBag.AssignedUserName = assignedUser.UserName;
                 ViewBag.Ticket = ticket;
                 ViewBag.Message = message;
                 ViewBag.ProjectId = ticket.ProjectId;
                 // prevent for selectList of users from having the users that ticket aleady assigned
-                var otherUsers = allUser.Where(u => u.Id != ticket.AssignedToUserId).ToList();
+                var loginedUserName = User.Identity.Name;
+                var loginedUser = userbll.Get(u=>u.UserName == loginedUserName);
+                var otherUsers = new List<AppUser>();
                 
-                
+
+
                 var selectlistOfUsers = new SelectList(otherUsers, "Id", "UserName");
+               
 
                 return View(selectlistOfUsers);
 
