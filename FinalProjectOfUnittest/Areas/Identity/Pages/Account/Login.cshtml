@@ -34,6 +34,7 @@
                 <div>
                     <button id="login-submit" type="submit" class="w-100 btn btn-lg btn-primary">Log in</button>
                 </div>
+            
                 <div>
                     <p>
                         <a id="forgot-password" asp-page="./ForgotPassword">Forgot your password?</a>
@@ -47,7 +48,31 @@
                 </div>
             </form>
         </section>
+
+
+           <form id="account" method="post">
+              
+                <hr />
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="form-floating">
+                    <input type="hidden" asp-for="Input.Email" value="Guest@mitt.ca" class="form-control" autocomplete="username" aria-required="true" />
+               
+                </div>
+                <div class="form-floating">
+                    <input type="hidden" asp-for="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" value="P@ssword1" />
+                 
+                </div>
+              
+                <div>
+                    <button id="login-submit" type="submit" class="w-100 btn btn-lg btn-primary">Guest Log in</button>
+                </div>
+            
+            </form>
+
+
+
     </div>
+
     <div class="col-md-6 col-md-offset-2">
         <section>
             <h3>Use another service to log in.</h3>
