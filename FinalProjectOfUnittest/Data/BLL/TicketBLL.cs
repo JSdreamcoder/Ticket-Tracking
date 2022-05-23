@@ -12,10 +12,10 @@ namespace FinalProjectOfUnittest.Data.BLL
         }
         public void Add(Ticket newticket)
         {
-            if (newticket.Title == null)
+            if (newticket.Title == "")
             {
                 throw new ArgumentNullException("You must write title name");
-            }else if (newticket.Description == null)
+            }else if (newticket.Description == "")
             {
                 throw new ArgumentNullException("You must write descrition");
             }else

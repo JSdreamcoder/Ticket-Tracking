@@ -10,7 +10,10 @@ namespace FinalProjectOfUnittest.Data.DAL
         {
             Context = context;
         }
-
+        public TicketDAL()
+        {
+           
+        }
         //Create
         public void Add(Ticket appuser)
         {
@@ -18,7 +21,7 @@ namespace FinalProjectOfUnittest.Data.DAL
         }
 
         //Read
-        public Ticket Get(int id)
+        public virtual Ticket Get(int id)
         {
             var db = Context.Ticket.Include(t => t.TicketHistories)
                                   .Include(t => t.TicketComments).ThenInclude(c=>c.User)
