@@ -86,6 +86,16 @@ namespace FinalProjectOfUnittest.Models
                     SecurityStamp = Guid.NewGuid().ToString()
                 };
 
+                AppUser user7 = new AppUser()
+                {
+                    Email = "Guest@mitt.ca",
+                    NormalizedEmail = "GUEST@MITT.CA",
+                    UserName = "Guest@mitt.ca",
+                    NormalizedUserName = "Guest@MITT.CA",
+                    EmailConfirmed = true,
+                    SecurityStamp = Guid.NewGuid().ToString()
+                };
+
                 var passwordHasher = new PasswordHasher<AppUser>();
                 var hasedPassword = passwordHasher.HashPassword(user, "P@ssword1");
                 user.PasswordHash = hasedPassword;
@@ -121,6 +131,12 @@ namespace FinalProjectOfUnittest.Models
                 user6.PasswordHash = hasedPassword6;
                 await userManager.CreateAsync(user6);
                 await userManager.AddToRoleAsync(user6, "Developer");
+
+                var passwordHasher7 = new PasswordHasher<AppUser>();
+                var hasedPassword7 = passwordHasher7.HashPassword(user7, "P@ssword1");
+                user7.PasswordHash = hasedPassword7;
+                await userManager.CreateAsync(user7);
+                await userManager.AddToRoleAsync(user7, "Administrator");
             }
             context.SaveChanges();
             // Seed project
@@ -155,8 +171,8 @@ namespace FinalProjectOfUnittest.Models
                 ticket2.Description = "When I use App for a long time, The App will be Auto jump out.";
                 ticket2.Created = DateTime.Now;
                 ticket2.ProjectId = context.Project.First(p => p.Name == "LanguageAI").Id;
-                ticket2.TicketType = TicketTypes.BugReport;
-                ticket2.TicketPriority = TicketPriorities.High;
+                ticket2.TicketType = TicketTypes.GeneralQuestion;
+                ticket2.TicketPriority = TicketPriorities.Low;
                 ticket2.TicketStatus = TicketStatus.Assigned;
                 ticket2.OwnerUserId = context.AppUser.First(u => u.UserName == "Jaewon@gmail.com").Id;
                 ticket2.AssignedToUserId = context.AppUser.First(u => u.UserName == "developer001@mitt.ca").Id;
@@ -167,8 +183,8 @@ namespace FinalProjectOfUnittest.Models
                 ticket3.Description = "When I use App for a long time, I will lose some information";
                 ticket3.Created = DateTime.Now;
                 ticket3.ProjectId = context.Project.First(p => p.Name == "LanguageAI").Id;
-                ticket3.TicketType = TicketTypes.BugReport;
-                ticket3.TicketPriority = TicketPriorities.High;
+                ticket3.TicketType = TicketTypes.AccountIssue;
+                ticket3.TicketPriority = TicketPriorities.Medium;
                 ticket3.TicketStatus = TicketStatus.Assigned;
                 ticket3.OwnerUserId = context.AppUser.First(u => u.UserName == "Jaewon@gmail.com").Id;
                 ticket3.AssignedToUserId = context.AppUser.First(u => u.UserName == "developer001@mitt.ca").Id;
