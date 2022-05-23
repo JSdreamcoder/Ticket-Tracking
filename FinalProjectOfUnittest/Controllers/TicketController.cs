@@ -41,7 +41,7 @@ namespace FinalProjectOfUnittest.Controllers
         }
         
         // GET: Tickets
-        public async Task<IActionResult> Index(int projectid,string projectname,string searchString, string currentFilter, int? pageNumber)
+        public async Task<IActionResult> Index(int projectid,string projectname,string searchString, string currentFilter, int? pageNumber,TicketPriorities priority,TicketTypes type,TicketStatus status,DateTime fromdate,DateTime todate,SortbyList sortby)
         {
             var userName = User.Identity.Name;
             var user = new AppUser();
@@ -58,7 +58,7 @@ namespace FinalProjectOfUnittest.Controllers
             var projectUser = projectUserbll.GetAll().FirstOrDefault(pu=> pu.ProjectId ==projectid &&  pu.UserId == user.Id);
             if (projectUser != null)
                 ViewBag.IsProjectUser = true;
-            if (searchString != null)
+            if (searchString != null || priority != TicketPriorities.TicketPriority || type != TicketTypes.TicketType || status != TicketStatus.TicketStatus)
             {
                 pageNumber = 1;
             }
@@ -69,11 +69,10 @@ namespace FinalProjectOfUnittest.Controllers
             var Tickets = ticketbll.GetAll().Where(t=>t.ProjectId==projectid);
             var TicketsWithAssinedUser = ticketbll.GetList(t=>t.AssignedToUserId != null);
             // For Searching
-           
             if (!String.IsNullOrEmpty(searchString))
             {
                 var testList = new List<Ticket>();
-               var SortedByTitle = Tickets.Where(t=>t.Title.ToLower().Contains(searchString.ToLower())).ToList();
+                var SortedByTitle = Tickets.Where(t=>t.Title.ToLower().Contains(searchString.ToLower())).ToList();
 
                 var SortedByOwner = Tickets.Where(t => t.OwnerUser.UserName.ToLower().Contains(searchString.ToLower())).ToList();
 
@@ -84,9 +83,46 @@ namespace FinalProjectOfUnittest.Controllers
                 Tickets = SortedByTitle.Concat(SortedByOwner)
                                          .Concat(SortedByAssignedUser)
                                          .ToList();
-             
-
             }
+
+            // For Filtering
+            var defaultDate = new DateTime();
+            if(priority != TicketPriorities.TicketPriority)
+                Tickets = Tickets.Where(t=>t.TicketPriority == priority).ToList();
+            if(status != TicketStatus.TicketStatus)
+                Tickets = Tickets.Where(t=>t.TicketStatus ==status).ToList();
+            if(type != TicketTypes.TicketType)
+                Tickets = Tickets.Where(t=>t.TicketType ==type).ToList();
+            if (fromdate != defaultDate)
+                Tickets = Tickets.Where(t => t.Created >= fromdate);
+            if(todate != defaultDate)
+                Tickets = Tickets.Where(t=>t.Created <= todate);
+
+            //for Sorting
+            var sortbyList = new List<string> { "Submitter", "Assigned Staff", "Newest Create", "Newest Update", "Ticket Type", "Ticket Priority", "Ticket Satus" };
+            if (sortby == SortbyList.Submitter)
+            {
+                Tickets = Tickets.OrderByDescending(t => t.OwnerUser.UserName);
+            }else if(sortby == SortbyList.AssignedStaff)
+            {
+                Tickets = Tickets.OrderByDescending(t => t.AssignedToUser.UserName);
+            }else if (sortby == SortbyList.NewestCreate)
+            {
+                Tickets = Tickets.OrderByDescending(t=>t.Created);
+            }else if(sortby == SortbyList.NewestUpdate)
+            {
+                Tickets = Tickets.OrderByDescending(t=>t.Updated);
+            }else if(sortby == SortbyList.TicketType)
+            {
+                Tickets = Tickets.OrderByDescending((t)=>t.TicketType);
+            }else if(sortby == SortbyList.TicketPriority)
+            {
+                Tickets = Tickets.OrderBy((t)=>t.TicketPriority);
+            }else if(sortby == SortbyList.TicketStatus)
+            {
+                Tickets = Tickets.OrderByDescending((t)=>t.TicketStatus);
+            }
+
             // For paging
             int pageSize = 10;
             return View(PaginatedList<Ticket>.Create(Tickets,pageNumber ?? 1,pageSize));

@@ -5,7 +5,7 @@
         //Create
         void Add(T entity);
         //Read
-       
+      
         T Get(Func<T, bool> firstFuction);
         ICollection<T> GetAll();
         ICollection<T> GetList(Func<T, bool> whereFuction);
@@ -14,6 +14,7 @@
         void Update(T entity);
         //Delete
         void Delete(T entity);
+
 
         void Save();
     }
