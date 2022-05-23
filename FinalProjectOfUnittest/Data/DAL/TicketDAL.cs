@@ -24,7 +24,7 @@ namespace FinalProjectOfUnittest.Data.DAL
                                   .Include(t => t.TicketComments).ThenInclude(c=>c.User)
                                   .Include(t => t.TicketNotifications)
                                   .Include(t => t.TicketAttachments)
-                                  .Include(t => t.Project)
+                                  .Include(t => t.Project).ThenInclude(p=>p.ProjectUsers).ThenInclude(pu=>pu.User)
                                   .Include(t => t.OwnerUser)
                                   .Include(t => t.AssignedToUser);
             return db.First(a => a.Id == id);

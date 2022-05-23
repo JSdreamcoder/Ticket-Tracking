@@ -1,4 +1,5 @@
 ﻿using FinalProjectOfUnittest.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace FinalProjectOfUnittest.Data.DAL
 {
@@ -32,7 +33,8 @@ namespace FinalProjectOfUnittest.Data.DAL
         }
         public ICollection<TicketNotification> GetList(Func<TicketNotification, bool> func)
         {
-            return Context.TicketNotification.Where(func).ToList();
+            var db = Context.TicketNotification.Include(t => t.Ticket);
+            return db.Where(func).ToList();
         }
 
         //Update

@@ -112,10 +112,16 @@
      @comment.Comment
   </p>
   <p style="font-size:1.3vw">written by @comment.User.UserName</p>
+  <a asp-action="Edit" asp-controller="TicketComments" asp-route-id=@comment.Id>Edit</a>
+      
+  
+<a asp-action="Delete" asp-controller="TicketComments" asp-route-id=@comment.Id>Delete</a>
+     
+  
   <hr />
 }
 
-<form asp-action="CreateComment" asp-route-ticketid=@Model.ticket1.Id>
+<form asp-action="Create" asp-controller="TicketComments" asp-route-ticketid=@Model.ticket1.Id>
     <textarea cols="50" name="comment" placeholder="Comment"></textarea></br>
     <button type="submit">Submit Comment</button>
 </form>

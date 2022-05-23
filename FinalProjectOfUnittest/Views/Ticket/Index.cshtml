@@ -136,6 +136,7 @@
    asp-route-currentFilter="@ViewData["CurrentFilter"]"
    asp-route-projectid=@ViewBag.ProjectId
    asp-route-projectname=@ViewBag.ProjectName
+   asp-route-numofitems=@ViewBag.PageSize
    class="btn btn-default @prevDisabled">
    Prev
    </a> 
@@ -148,7 +149,7 @@
    asp-route-currentFilter="@ViewData["CurrentFilter"]"
    asp-route-projectid=@ViewBag.ProjectId
    asp-route-projectname=@ViewBag.ProjectName
-   
+   asp-route-numofitems=@ViewBag.PageSize
    class="btn btn-default @isPage">
    @i
    </a> 
@@ -160,7 +161,15 @@
    asp-route-currentFilter="@ViewData["CurrentFilter"]"
    asp-route-projectid=@ViewBag.ProjectId
    asp-route-projectname=@ViewBag.ProjectName
+   asp-route-numofitems=@ViewBag.PageSize
    class="btn btn-default @nextDisabled">
    Next
    </a> 
 </div>
+
+<form asp-action="Index" method="get" >
+ <input type="number" name="numofitems" placeholder="Page Size"/>
+ <input type="hidden" name="projectid" value=@ViewBag.ProjectId />
+ <input type="hidden" name="projectname" value=@ViewBag.ProjectName />
+  <input type="submit" value="Submit" class="btn btn-outline-success btn-sm" />
+</form>

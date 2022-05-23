@@ -1,0 +1,44 @@
+﻿@model IEnumerable<FinalProjectOfUnittest.Models.TicketNotification>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            
+            <th>
+                Assiged Ticket Title
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            
+            <td>
+                <a asp-action="Details" asp-controller="Ticket" asp-route-id=@item.TicketId>@item.Ticket.Title</a>
+            </td>
+            <td>
+              @if(item.Ticket.TicketStatus == TicketStatus.Assigned)
+                    {
+                    <form method="post" asp-route-ticketid=@item.TicketId asp-controller="Ticket" asp-action="CompleteTicket">
+                    <button type="submit">Complete</button>
+                        </form>
+
+                    }else if(item.Ticket.TicketStatus == TicketStatus.Completed)
+                    {
+                        <p>Completed</p>
+                    }
+                </td>
+        </tr>
+}
+    </tbody>
+</table>

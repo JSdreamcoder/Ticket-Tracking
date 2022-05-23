@@ -15,10 +15,28 @@ namespace FinalProjectOfUnittest.Data.BLL
         {
             ticketCommentDAL.Add(tc);
         }
+        public virtual ICollection<TicketComment> GetAll()
+        {
+            return ticketCommentDAL.GetAll();
+        }
 
+        public virtual TicketComment Get(int Id)
+        {
+            return ticketCommentDAL.Get(Id);
+        }
+
+        public void Update(TicketComment tc)
+        {
+            ticketCommentDAL.Update(tc);
+        }
         public void Save()
         {
             ticketCommentDAL.Save();
+        }
+
+        public void Delete(TicketComment tc)
+        {
+            ticketCommentDAL.Delete(tc);
         }
     }
 }

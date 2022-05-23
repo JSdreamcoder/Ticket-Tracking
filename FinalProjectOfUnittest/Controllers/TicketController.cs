@@ -26,6 +26,7 @@ namespace FinalProjectOfUnittest.Controllers
         private readonly TIcketCommentBLL ticketCommentbll;
         private readonly TicketHistoryBLL ticketHistoryBLL;
         private readonly TicketLogItemBLL ticketLogItemBLL;
+        private readonly TicketNotificationBLL ticketNotificationbll;
         
         public TicketController(ApplicationDbContext context,UserManager<AppUser> um)
         {
@@ -37,11 +38,12 @@ namespace FinalProjectOfUnittest.Controllers
             ticketCommentbll = new TIcketCommentBLL(new TicketCommentDAL(context));
             ticketHistoryBLL = new TicketHistoryBLL(new TicketHistoryDAL(context));
             ticketLogItemBLL = new TicketLogItemBLL(new TicketLogItemDAL(context));
+            ticketNotificationbll = new TicketNotificationBLL(new TicketNotificationDAL(context));
             userManager = um;
         }
         
         // GET: Tickets
-        public async Task<IActionResult> Index(int projectid,string projectname,string searchString, string currentFilter, int? pageNumber,TicketPriorities priority,TicketTypes type,TicketStatus status,DateTime fromdate,DateTime todate,SortbyList sortby)
+        public async Task<IActionResult> Index(int projectid,string projectname,string searchString, string currentFilter, int? pageNumber,TicketPriorities priority,TicketTypes type,TicketStatus status,DateTime fromdate,DateTime todate,SortbyList sortby,int numofitems)
         {
             var userName = User.Identity.Name;
             var user = new AppUser();
@@ -124,12 +126,16 @@ namespace FinalProjectOfUnittest.Controllers
             }
 
             // For paging
-            int pageSize = 10;
+            int pageSize = numofitems;
+            ViewBag.PageSize = pageSize;
+            if (numofitems == 0)
+                pageSize = 10;
+            
             return View(PaginatedList<Ticket>.Create(Tickets,pageNumber ?? 1,pageSize));
         }
 
         // GET: Tickets/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(int id)
         {
             if (id == null || ticketbll.GetAll() == null)
             {
@@ -138,7 +144,12 @@ namespace FinalProjectOfUnittest.Controllers
             
             var ticket = ticketbll.GetAll()
                 .FirstOrDefault(m => m.Id == id);
-            var filePaths = ticket.TicketAttachments.Select(t=>t.FilePath).ToList();
+            var filePaths = new List<string>();
+            if(ticket.TicketAttachments != null)
+            {
+                filePaths = ticket.TicketAttachments.Select(t => t.FilePath).ToList();
+            }
+           
             List<string> fileNames = new List<string>();
             foreach (var file in filePaths)
             {
@@ -170,27 +181,7 @@ namespace FinalProjectOfUnittest.Controllers
             string fileName = Path.GetFileName(filePath);
             return File(fileBytes, System.Net.Mime.MediaTypeNames.Application.Octet, fileName);
         }
-        [HttpPost]
-        public IActionResult CreateComment(int ticketid, string comment)
-        {
-            try
-            {
-                var userName = User.Identity.Name;
-                var user = userbll.Get(u => u.UserName == userName);
-                var newComment = new TicketComment();
-                newComment.Comment = comment;
-                newComment.TicketId = ticketid;
-                newComment.UserId = user.Id;
-                newComment.Created = DateTime.Now;
-                ticketCommentbll.Add(newComment);
-                ticketCommentbll.Save();
-                return RedirectToAction("Details", new { id = ticketid });
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
-        }
+     
 
         //public IActionResult UpLoad()
         //{
@@ -378,7 +369,12 @@ namespace FinalProjectOfUnittest.Controllers
                 ticketbll.Update(ticket);
                 ticketbll.Save();
 
-                
+                //Maing TicketNotification
+                var newNotification = new TicketNotification();
+                newNotification.TicketId = ticket.Id;
+                newNotification.UserId = userid;
+                ticketNotificationbll.Add(newNotification);
+                ticketNotificationbll.Save();
 
                 
 
@@ -392,6 +388,68 @@ namespace FinalProjectOfUnittest.Controllers
             }
             return RedirectToAction("AssignTicketToUser", new {ticketid = ticketid, message = "Success"});
         }
+        [HttpPost]
+        public async Task<IActionResult> CompleteTicket(int ticketid)
+        {
+            //Get Ticket
+            var ticket = ticketbll.GetById(ticketid);
+
+            //Getting User
+            var LoginedUserName = User.Identity.Name;
+            var LoginedUser = userbll.Get(u => u.UserName == LoginedUserName);
+
+            //Getting Time now
+            var NowTime = DateTime.Now;
+
+            //Making Ticket History
+            var ticketHistory = new TicketHistory();
+            ticketHistory.Property = $"Updated({NowTime}),TicketStatus({TicketStatus.Completed})";
+            ticketHistory.Changed = NowTime; // .Value makes equal corecctly between nullable and non nullable 
+            ticketHistory.UserId = LoginedUser.Id;
+            ticketHistory.TicketId = ticketid;
+            ticketHistoryBLL.Add(ticketHistory);
+            ticketHistoryBLL.Save();
+
+            //Making TicketLogItem
+            var ticketLogItem = new TicketLogItem();
+            ticketLogItem.TicketHistoryId = ticketHistory.Id;
+            ticketLogItem.Title = ticket.Title;
+            ticketLogItem.Description = ticket.Description;
+            ticketLogItem.Created = ticket.Created;
+            ticketLogItem.Updated = NowTime;
+            ticketLogItem.ProjectId = ticket.ProjectId;
+            ticketLogItem.TicketType = ticket.TicketType;
+            ticketLogItem.OwnerUserId = ticket.OwnerUserId;
+            ticketLogItem.AssignedToUserId = ticket.AssignedToUserId;
+            ticketLogItemBLL.Add(ticketLogItem);
+            ticketLogItemBLL.Save();
+
+            //complete and Update ticket 
+            ticket.TicketStatus = TicketStatus.Completed;
+            ticketbll.Update(ticket);
+            ticketbll.Save();
+
+            //Getting project manager
+            var projectManager = new AppUser();
+            foreach (var projectuser in ticket.Project.ProjectUsers)
+            {
+                bool isProjectManager = await userManager.IsInRoleAsync(projectuser.User, "ProjectManager");
+                if (isProjectManager)
+                    projectManager = projectuser.User;
+            }
+
+            //Maing TicketNotification
+            var newNotification = new TicketNotification();
+            newNotification.TicketId = ticket.Id;
+            newNotification.UserId = projectManager.Id;
+            ticketNotificationbll.Add(newNotification);
+            ticketNotificationbll.Save();
+            return RedirectToAction("Index", "TicketNotifications");
+
+        }
+
+
+
         // GET: Tickets/Edit/5
         public async Task<IActionResult> Edit(int id,string? message)
         {
