@@ -17,7 +17,7 @@ namespace FinalProjectOfUnittest.Data.BLL
             AppUserDAL = adal;
             userManager = um;
         }
-
+        
         public AppUser GetUserbyId(string Id)
         {
             

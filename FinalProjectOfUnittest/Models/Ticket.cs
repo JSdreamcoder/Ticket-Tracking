@@ -1,4 +1,6 @@
-﻿namespace FinalProjectOfUnittest.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace FinalProjectOfUnittest.Models
 {
     public class Ticket
     {
@@ -37,6 +39,7 @@
 
     public enum TicketStatus
     {
+        TicketStatus,
         Submitted,
         Assigned,
         Completed
@@ -44,6 +47,7 @@
 
     public enum TicketPriorities
     {
+        TicketPriority,
         High,
         Medium,
         Low
@@ -51,6 +55,7 @@
 
     public enum TicketTypes
     { 
+        TicketType,
         GeneralQuestion,  // Low
         BugReport,        // High
         Payment,          // Medium
@@ -58,6 +63,26 @@
         AccountIssue      // High
     }
 
+    
+    public enum SortbyList
+    {
+        [Display(Name = "Select Sort Way")]
+        Sortby,
+        Submitter,
+        [Display(Name = "Assigned Staff")]
+        AssignedStaff,
+        [Display(Name = "Newest Created Date")]
+        NewestCreate,
+        [Display(Name = "Newest Updated Date")]
+        NewestUpdate,
+        [Display(Name = "Ticket Type")]
+        TicketType,
+        [Display(Name = "Ticket Priority")]
+        TicketPriority,
+        [Display(Name = "Ticket Status")]
+        TicketStatus
+            
+    }
 
 
 }
