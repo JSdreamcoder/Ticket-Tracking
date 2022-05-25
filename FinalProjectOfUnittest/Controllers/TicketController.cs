@@ -69,6 +69,7 @@ namespace FinalProjectOfUnittest.Controllers
                 searchString = currentFilter;
             }
             var Tickets = ticketbll.GetAll().Where(t=>t.ProjectId==projectid);
+//Unit test - worthy try
             var TicketsWithAssinedUser = ticketbll.GetList(t=>t.AssignedToUserId != null);
             // For Searching
             if (!String.IsNullOrEmpty(searchString))

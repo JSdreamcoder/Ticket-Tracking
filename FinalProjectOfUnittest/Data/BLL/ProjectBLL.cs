@@ -11,6 +11,10 @@ namespace FinalProjectOfUnittest.Data.BLL
         {
             projectDAL = pd;
         }
+        public ProjectBLL()
+        {
+
+        }
 
         public void Create(Project newProject)
         {
@@ -23,7 +27,7 @@ namespace FinalProjectOfUnittest.Data.BLL
             return projectDAL.Get(id);
         }
 
-        public ICollection<Project> GetAll()
+        public  ICollection<Project> GetAll()
         {
             return projectDAL.GetAll();
         }

@@ -30,8 +30,9 @@ namespace Unittest
            
        
         [TestMethod]
-        public void Add_Description()
+        public void GetFunctionThrowExceptionWithEmptyDescription()
         {
+            //Arrange
             newticket = new Ticket
             {
                 Id = 1,
@@ -44,11 +45,13 @@ namespace Unittest
                 ProjectId = 1
                 
             };
+
+            // Act Assert
             Assert.ThrowsException<ArgumentNullException>(() => ticketBLL.Add(newticket));
         }
 
         [TestMethod]
-        public void Add_Title()
+        public void GetFunctionThrowExceptionWithEmptyTitle()
         {
             newticket = new Ticket
             {
@@ -64,22 +67,6 @@ namespace Unittest
             };
             Assert.ThrowsException<ArgumentNullException>(() => ticketBLL.Add(newticket));
         }
-        [TestMethod]
-        public void Add_NoNull()
-        {
-            newticket = new Ticket
-            {
-                Id = 1,
-                Title = "Title Use it to Text",
-                Description = "Description Use it to Text",
-                Created = DateTime.Now,
-                TicketType = TicketTypes.BugReport,
-                TicketPriority = TicketPriorities.High,
-                TicketStatus = TicketStatus.Assigned,
-                ProjectId = 1
-
-            };
-            Assert.AreEqual(initialBalance, newticket.Title);
-        }
+       
     }
 }

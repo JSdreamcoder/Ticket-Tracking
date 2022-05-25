@@ -14,8 +14,11 @@ namespace Unittest
     {
         Mock<RoleDAL> repoMock;
         RoleBLL rolebll;
-        RoleManager<IdentityRole> roleManager; 
-        [TestInitialize]
+        RoleManager<IdentityRole> roleManager;
+        Func<IdentityRole, bool> testFunc;
+        IdentityRole adminrole;
+
+       [TestInitialize]
         public void InitialLizeTest()
         {
             ICollection<IdentityRole> allroles = new List<IdentityRole>();
@@ -23,11 +26,28 @@ namespace Unittest
             allroles.Add(new IdentityRole("Developer"));
             allroles.Add(new IdentityRole("ProjectManager"));
             allroles.Add(new IdentityRole("Administrator"));
+            adminrole = new IdentityRole("Administrator");
             repoMock = new Mock<RoleDAL>();
             
+            
             repoMock.Setup(r => r.GetAll()).Returns(allroles);
+            
+            repoMock.Setup(r => r.Get(It.Is<Func<IdentityRole, bool>>(f => f == testFunc))).Returns(adminrole);
 
             rolebll = new RoleBLL(repoMock.Object);
+        }
+
+        [TestMethod]
+        public void GetFunctionReturnRoleByFunc()
+        {
+            //Arrange
+            testFunc = r => r.Name == "Administrator";
+
+            //Act
+            var result = rolebll.Get(testFunc);
+
+            //Assert
+            Assert.AreEqual(adminrole, result);
         }
         [TestMethod]
         public void GetCounterPartRoles()
@@ -66,9 +86,6 @@ namespace Unittest
         {
             //Arrange
             IList<string> testuserroll = new List<string>();
-
-            //Act
-            //rolebll.GetCounterPartRoles(testuserroll);
 
             //Act and Assert
             Assert.ThrowsException<ArgumentNullException>(() => rolebll.GetCounterPartRoles(testuserroll));

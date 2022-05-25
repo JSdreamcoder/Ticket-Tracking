@@ -1,6 +1,6 @@
 ﻿using FinalProjectOfUnittest.Models;
 using Microsoft.EntityFrameworkCore;
-
+// ctor  -- Making construction
 namespace FinalProjectOfUnittest.Data.DAL
 {
     public class ProjectDAL : IDAL<Project>
@@ -11,7 +11,10 @@ namespace FinalProjectOfUnittest.Data.DAL
         {
             Context = context;
         }
-
+        public ProjectDAL()
+        {
+                
+        }
         //Create
         public void Add(Project project)
         {
@@ -20,7 +23,7 @@ namespace FinalProjectOfUnittest.Data.DAL
 
         //Read
         
-        public Project Get(int id)
+        public virtual Project Get(int id)
         {
             var projects = Context.Project.Include(p => p.Tickets)
                                           .Include(p=>p.ProjectUsers).ThenInclude(pu=>pu.User);
@@ -33,7 +36,7 @@ namespace FinalProjectOfUnittest.Data.DAL
             return projects.First(firstFuction);
             
         }
-        public ICollection<Project> GetAll()
+        public virtual ICollection<Project> GetAll()
         {
             var projects = Context.Project.Include(p => p.Tickets)
                                           .Include(p => p.ProjectUsers);
