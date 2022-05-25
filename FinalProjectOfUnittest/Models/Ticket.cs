@@ -122,6 +122,7 @@ namespace FinalProjectOfUnittest.Models
             }
             else //high
             {
+
                 DeadLineStrategy = new MediumPriortyDeadLine();
             }
             // 3. run setDeadline of the LowPriorityDealine strategy
