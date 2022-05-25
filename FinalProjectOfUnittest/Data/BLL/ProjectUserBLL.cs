@@ -20,6 +20,7 @@ namespace FinalProjectOfUnittest.Data.BLL
             return projectUserDAL.GetAll();
         }
 
+
         public ProjectUser Get(Func<ProjectUser, bool> func)
         {
             return projectUserDAL.Get(func);
