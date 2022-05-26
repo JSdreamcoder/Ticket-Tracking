@@ -13,7 +13,18 @@ namespace FinalProjectOfUnittest.Data.BLL
 
         public void Add(TicketLogItem item)
         {
-            ticketLogItemDAL.Add(item);
+            if (item.Title == "")
+            {
+                throw new ArgumentNullException("You must write title name");
+            }
+            else if (item.Description == "")
+            {
+                throw new ArgumentNullException("You must write descrition");
+            }
+            else
+            {
+                ticketLogItemDAL.Add(item);
+            }
         }
         public TicketLogItem GetById(int id)
         {

@@ -13,7 +13,18 @@ namespace FinalProjectOfUnittest.Data.BLL
         }
         public void Add(TicketNotification entity)
         {
-            ticketNotificationDAL.Add(entity);
+            if (entity.Id == 0)
+            {
+                throw new ArgumentNullException("id cannot input 0");
+            }
+            else if (entity.Ticket == null)
+            {
+                throw new ArgumentNullException("value of ticket cannot be null");
+            }
+            else
+            {
+                ticketNotificationDAL.Add(entity);
+            }
         }
         public TicketNotification Get(Func<TicketNotification, bool> firstFuction)
         {
