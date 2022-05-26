@@ -258,8 +258,9 @@ namespace FinalProjectOfUnittest.Models
                 OwnerUserId = owneruserid,
                 TicketStatus = TicketStatus.Submitted
             };
-            newTicket = SetDeadLines(newTicket);
             newTicket = SetTicketPriority(newTicket);
+            newTicket = SetDeadLines(newTicket);
+           
 
             if (type == TicketTypes.AccountIssue)
             {
