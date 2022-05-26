@@ -16,6 +16,8 @@
 @{
     var IsAdmin = User.IsInRole("Administrator");
     var IsProjectManager = User.IsInRole("ProjectManager");
+    var IsDeveloper = User.IsInRole("Developer");
+    var IsSubmitter = User.IsInRole("Submitter");
 }
 <body>
     <header>
@@ -43,6 +45,7 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="AppUser" asp-action="Index">User Manager</a>
                         </li>
                         }
+                     
                     </ul>
                     <partial name="_LoginPartial" />
                 </div>

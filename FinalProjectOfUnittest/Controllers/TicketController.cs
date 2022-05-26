@@ -289,9 +289,14 @@ namespace FinalProjectOfUnittest.Controllers
                 var AllDeveloper = await userManager.GetUsersInRoleAsync("Developer");
                 var AllProjectManager = await userManager.GetUsersInRoleAsync("ProjectManager");
                 var AllAdmins = await userManager.GetUsersInRoleAsync("Administrator");
-                
+
                 var ticket = ticketbll.GetById(ticketid);
-                var assignedUser = userbll.GetUserbyId(ticket.AssignedToUserId);
+                var assignedUser = new AppUser();
+                if (ticket.AssignedToUser != null)
+                {
+                   assignedUser = userbll.GetUserbyId(ticket.AssignedToUserId);
+                }
+                 
                 ViewBag.AssignedUserName = assignedUser.UserName;
                 ViewBag.Ticket = ticket;
                 ViewBag.Message = message;

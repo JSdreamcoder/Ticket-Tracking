@@ -21,7 +21,8 @@ namespace FinalProjectOfUnittest.Data.DAL
        
         public AppUser GetbyId(string id)
         {
-            return Context.AppUser.First(a => a.Id == id);
+            
+            return Context.AppUser.FirstOrDefault(a => a.Id == id);
         }
         public AppUser Get(Func<AppUser, bool> firstFuction)
         {
