@@ -12,7 +12,7 @@
 <h1>@ViewBag.ProjectName Tickets</h1>
 
 <p>
-    <a asp-action="Create" asp-route-projectid=@ViewBag.ProjectId>Submit new Ticket</a>
+    <a class="btn btn-primary" role="button" asp-action="Create" asp-route-projectid=@ViewBag.ProjectId>Submit new Ticket</a>
 </p>
 
 <form asp-action="Index" method="get" >
@@ -168,7 +168,7 @@
 </div>
 
 <form asp-action="Index" method="get" >
- <input type="number" name="numofitems" placeholder="Page Size"/>
+ <input type="number" min="1" name="numofitems" placeholder="Page Size"/>
  <input type="hidden" name="projectid" value=@ViewBag.ProjectId />
  <input type="hidden" name="projectname" value=@ViewBag.ProjectName />
   <input type="submit" value="Submit" class="btn btn-outline-success btn-sm" />

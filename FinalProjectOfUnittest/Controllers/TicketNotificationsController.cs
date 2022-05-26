@@ -30,7 +30,8 @@ namespace FinalProjectOfUnittest.Controllers
             var user = userbll.Get(u=>u.UserName == userName);
             var userid = user.Id;
             var allnotifications = noticebll.GetList(n => n.UserId == userid);
-            return View(allnotifications.ToList());
+            allnotifications = allnotifications.OrderByDescending(n => n.Id).ToList();
+            return View(allnotifications);
         }
 
     //    // GET: TicketNotifications/Details/5

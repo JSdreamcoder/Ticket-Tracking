@@ -45,6 +45,7 @@ namespace FinalProjectOfUnittest.Controllers
         // GET: Tickets
         public async Task<IActionResult> Index(int projectid,string projectname,string searchString, string currentFilter, int? pageNumber,TicketPriorities priority,TicketTypes type,TicketStatus status,DateTime fromdate,DateTime todate,SortbyList sortby,int numofitems)
         {
+            
             var userName = User.Identity.Name;
             var user = new AppUser();
             if (userName != null)
@@ -124,10 +125,13 @@ namespace FinalProjectOfUnittest.Controllers
             }else if(sortby == SortbyList.TicketStatus)
             {
                 Tickets = Tickets.OrderByDescending((t)=>t.TicketStatus);
+            }else
+            {
+                Tickets = Tickets.OrderByDescending(t => t.Created);
             }
 
-            // For paging
-            int pageSize = numofitems;
+                // For paging
+                int pageSize = numofitems;
             ViewBag.PageSize = pageSize;
             if (numofitems == 0)
                 pageSize = 10;
