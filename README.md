@@ -4,7 +4,7 @@
 2. Serching by Title, submitter name, Assigned developer name.<br/>
 3. Sort by newest, ticket type, ticket priority, ticket status.<br/>
 4. Upload and Download attached files.<br/>
-5. Notice(a.When developer is assigned, devpeloper get notice b.when ticket completed, proeject manager get notice) 
+5. Notice( A.When developer is assigned, devpeloper get notice.  B.when ticket completed, proeject manager get notice ) 
 6. User can log in as Guest without Sign up.
 7. Success unit test of Get(Func<T,bool> func) function in the RoleBLLTest. 
 ## Changes compared to existing requirements
