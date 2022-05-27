@@ -14,7 +14,6 @@ namespace Unittest
     {
         Mock<RoleDAL> repoMock;
         RoleBLL rolebll;
-        RoleManager<IdentityRole> roleManager;
         Func<IdentityRole, bool> testFunc;
         IdentityRole adminrole;
 
@@ -32,6 +31,7 @@ namespace Unittest
             
             repoMock.Setup(r => r.GetAll()).Returns(allroles);
             
+
             repoMock.Setup(r => r.Get(It.Is<Func<IdentityRole, bool>>(f => f == testFunc))).Returns(adminrole);
 
             rolebll = new RoleBLL(repoMock.Object);

@@ -137,6 +137,9 @@ namespace FinalProjectOfUnittest.Models
                 user7.PasswordHash = hasedPassword7;
                 await userManager.CreateAsync(user7);
                 await userManager.AddToRoleAsync(user7, "Administrator");
+                await userManager.AddToRoleAsync(user7, "Projectmanager");
+                await userManager.AddToRoleAsync(user7, "Developer");
+                await userManager.AddToRoleAsync(user7, "Submitter");
             }
             context.SaveChanges();
             // Seed project
