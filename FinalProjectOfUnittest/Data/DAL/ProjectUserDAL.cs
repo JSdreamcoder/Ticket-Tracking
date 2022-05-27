@@ -9,8 +9,12 @@ namespace FinalProjectOfUnittest.Data.DAL
         {
             Context = context;
         }
-        
-        
+
+        public ProjectUserDAL() { }
+
+
+
+
         //Create
         public void Add(ProjectUser appuser)
         {
