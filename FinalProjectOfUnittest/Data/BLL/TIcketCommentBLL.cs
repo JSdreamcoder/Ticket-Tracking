@@ -13,7 +13,18 @@ namespace FinalProjectOfUnittest.Data.BLL
 
         public virtual void Add(TicketComment tc)
         {
-            ticketCommentDAL.Add(tc);
+            if (tc.Id == 0)
+            {
+                throw new ArgumentNullException("id cannot input 0");
+            }
+            else if (tc.Comment == "")
+            {
+                throw new ArgumentNullException("You must write a comment");
+            }
+            else
+            {
+                ticketCommentDAL.Add(tc);
+            }
         }
         public virtual ICollection<TicketComment> GetAll()
         {
@@ -38,5 +49,9 @@ namespace FinalProjectOfUnittest.Data.BLL
         {
             ticketCommentDAL.Delete(tc);
         }
+
+        
+
+   
     }
 }

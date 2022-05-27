@@ -55,5 +55,10 @@ namespace FinalProjectOfUnittest.Data.DAL
         {
             Context.SaveChanges();
         }
+
+        public TicketHistoryDAL()
+        {
+
+        }
     }
 }
