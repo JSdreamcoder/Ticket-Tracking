@@ -10,6 +10,10 @@ namespace FinalProjectOfUnittest.Data.DAL
         {
             Context = context;
         }
+        public AppUserDAL()
+        {
+
+        }
 
         //Create
         public void Add(AppUser appuser)
@@ -24,13 +28,13 @@ namespace FinalProjectOfUnittest.Data.DAL
             
             return Context.AppUser.FirstOrDefault(a => a.Id == id);
         }
-        public AppUser Get(Func<AppUser, bool> firstFuction)
+        public virtual AppUser Get(Func<AppUser, bool> firstFuction)
         {
             var allusers = Context.AppUser.Include(u => u.ProjectUsers);
             return Context.AppUser.FirstOrDefault(firstFuction);
             
         }
-        public ICollection<AppUser> GetAll()
+        public virtual ICollection<AppUser> GetAll()
         {
             
             return Context.AppUser.ToList();//convert the type from database to list
