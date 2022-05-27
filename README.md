@@ -1,6 +1,7 @@
 # FinalProjectOfUnittest( Ticket(Request) system
 - this proeject is making Ticket(request) system.
-- ![image](https://user-images.githubusercontent.com/95237930/170737104-71989e6b-2fba-422f-b21f-821b456d8037.png)
+![image](https://user-images.githubusercontent.com/95237930/170739657-cb7e748f-0694-40e1-87d4-1052fbd62f99.png)
+
 ## Applied Features
 1. Paging(user can change page size).<br/>
 2. Serching by Title, submitter name, Assigned developer name.<br/>
