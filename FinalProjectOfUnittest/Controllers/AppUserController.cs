@@ -14,7 +14,6 @@ namespace FinalProjectOfUnittest.Controllers
     public class AppUserController : Controller
     {
 
-        //make declaration first like last group project, difference is using appuserbll, bll gets data from dal
         private readonly ApplicationDbContext context;
         private readonly AppUserBLL userbll;
         private readonly UserManager<AppUser> userManager;

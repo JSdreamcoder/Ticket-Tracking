@@ -9,7 +9,8 @@ namespace FinalProjectOfUnittest.Models
         public ICollection<TicketComment> TicketComments { get; set; }
         public ICollection<TicketHistory> TicketHistories { get; set; }
         public ICollection<TicketNotification> TicketNotifications { get; set; }
-        [InverseProperty("AssignedToUser")]
+
+        [InverseProperty("AssignedToUser")]//inverse
         public ICollection<Ticket> AssignedTicket { get; set; }
         [InverseProperty("OwnerUser")]
         public ICollection<Ticket> OwnerTicket { get; set; }
