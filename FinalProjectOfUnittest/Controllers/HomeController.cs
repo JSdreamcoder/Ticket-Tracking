@@ -57,46 +57,12 @@ namespace FinalProjectOfUnittest.Controllers
         }
 
 
-         public async Task<IActionResult> email()
-        {
-            var apiKey = Environment.GetEnvironmentVariable("SendGrid");
-            var client = new SendGridClient("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");
-            var from = new EmailAddress("test@example.com", "Example User");
-            var subject = "Sending with SendGrid is Fun";
-            var to = new EmailAddress("test@example.com", "Example User");
-            var plainTextContent = "and easy to do anywhere, even with C#";
-            var htmlContent = "<strong>and easy to do anywhere, even with C#</strong>";
-            var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
-            var response = await client.SendEmailAsync(msg);
-
-            return Ok("Success");
-        }
+      
     }
 
 
 
-    internal class Example
-    {
-        private static void Main()
-        {
-            Execute().Wait();
-        }
-
-        static async Task Execute()
-        {
-            var apiKey = Environment.GetEnvironmentVariable("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");
-            var client = new SendGridClient(apiKey);
-            var from = new EmailAddress("test@example.com", "Example User");
-            var subject = "Sending with SendGrid is Fun";
-            var to = new EmailAddress("assess81@gmail.com", "Example User");
-            var plainTextContent = "and easy to do anywhere, even with C#";
-            var htmlContent = "<strong>and easy to do anywhere, even with C#</strong>";
-            var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
-            var response = await client.SendEmailAsync(msg);
-
-           
-        }
-    }
+  
 
 
 
