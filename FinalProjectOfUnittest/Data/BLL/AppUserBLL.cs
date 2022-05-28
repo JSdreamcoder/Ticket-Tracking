@@ -40,7 +40,10 @@ namespace FinalProjectOfUnittest.Data.BLL
             return AppUserDAL.Get(firstFunction);//get data from DAL to BLL
         }
 
-      
+        public void Update(AppUser user)
+        {
+            AppUserDAL.Update(user);
+        }
 
         public void Save()
         {
