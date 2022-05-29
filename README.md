@@ -12,6 +12,7 @@
 7. User can log in as Guest without Sign up. Guset User has all roles.
 8. Success unit test of Get(Func<T,bool> func) function in the RoleBLLTest. 
 9. Seed data (2 projects, 6 tickets, 7 Users(Admin,ProejejcManager,2 Developers,2 Submitters,Guest),
+10. Implement Email service(Register, Recover Password) 
 ## Changes compared to existing requirements
 1. Guest user has all roles for advanture all functions of proejct.
 2. TicketLogItem class(image of previous ticket) which has one to one relation ship with TicketHistory.
