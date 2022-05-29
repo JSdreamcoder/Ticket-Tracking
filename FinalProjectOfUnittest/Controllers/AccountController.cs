@@ -13,9 +13,11 @@ namespace FinalProjectOfUnittest.Controllers
     public class AccountController : Controller
     {
         AppUserBLL userbll;
-        public AccountController(ApplicationDbContext db)
+        UserManager<AppUser> userManager;
+        public AccountController(ApplicationDbContext db,UserManager<AppUser>um)
         {
             userbll = new AppUserBLL(new AppUserDAL(db));
+            userManager = um;
         }
         public IActionResult Index()
         {
@@ -24,6 +26,10 @@ namespace FinalProjectOfUnittest.Controllers
 
         public async Task<IActionResult> SendEmail(string email, string confirmurl)
         {
+            var user = userbll.Get(u=>u.UserName == email);
+            await userManager.AddToRoleAsync(user,"Submitter");
+            userbll.Update(user);
+            userbll.Save();
             var apiKey = Environment.GetEnvironmentVariable("jaewonhw");
             var client = new SendGridClient(apiKey);
             var from = new EmailAddress("JBZgroup@email.com", "TicketSupportCenter");

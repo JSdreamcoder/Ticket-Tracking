@@ -36,12 +36,7 @@ namespace FinalProjectOfUnittest.Controllers
             {
                 var user = appUserBLL.Get(u => u.UserName == userName);
                 var userId = user.Id;
-                var roles = await userManager.GetRolesAsync(user);
-                // Assign submitter role to new user 
-                if (!roles.Any())
-                {
-                    await userManager.AddToRoleAsync(user, "Submitter");
-                }
+               
                 var noticesByUser = noticebll.GetList(n => n.UserId == userId && n.Ticket.TicketStatus != TicketStatus.Completed);
                 ViewBag.NumOfNotices = noticesByUser.Count;
 
