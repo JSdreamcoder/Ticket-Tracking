@@ -58,8 +58,8 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddAuthentication().AddGoogle(googleOptions =>
 {
    
-    googleOptions.ClientId = "492938179244-im3rt4d39t4fujr4m22c2hf0ahngiffd.apps.googleusercontent.com";
-    googleOptions.ClientSecret = "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";
+    googleOptions.ClientId = Environment.GetEnvironmentVariable("GoogleAuthId");
+    googleOptions.ClientSecret = Environment.GetEnvironmentVariable("GoogleAuthSecret");
 });
 
 var app = builder.Build();

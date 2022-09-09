@@ -108,13 +108,10 @@ namespace FinalProjectOfUnittest.Controllers
                 Tickets = Tickets.Where(t=>t.Created <= todate);
 
             //for Sorting
-            var sortbyList = new List<string> { "Submitter", "Assigned Staff", "Newest Create", "Newest Update", "Ticket Type", "Ticket Priority", "Ticket Satus" };
+            var sortbyList = new List<string> { "Submitter", "Newest Create", "Newest Update", "Ticket Type", "Ticket Priority", "Ticket Satus" };
             if (sortby == SortbyList.Submitter)
             {
                 Tickets = Tickets.OrderByDescending(t => t.OwnerUser.UserName);
-            }else if(sortby == SortbyList.AssignedStaff)
-            {
-                Tickets = Tickets.OrderByDescending(t => t.AssignedToUser.UserName);
             }else if (sortby == SortbyList.NewestCreate)
             {
                 Tickets = Tickets.OrderByDescending(t=>t.Created);
