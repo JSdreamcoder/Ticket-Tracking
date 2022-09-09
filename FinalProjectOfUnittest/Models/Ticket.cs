@@ -1,9 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 namespace FinalProjectOfUnittest.Models
 {
-    public class Ticket//for inherit
+    public class Ticket
     {
-
         public int Id { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
