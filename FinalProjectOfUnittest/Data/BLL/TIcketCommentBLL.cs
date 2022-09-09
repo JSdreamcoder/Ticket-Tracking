@@ -13,11 +13,8 @@ namespace FinalProjectOfUnittest.Data.BLL
 
         public virtual void Add(TicketComment tc)
         {
-            if (tc.Id == 0)
-            {
-                throw new ArgumentNullException("id cannot input 0");
-            }
-            else if (tc.Comment == "")
+         
+            if (tc.Comment == "")
             {
                 throw new ArgumentNullException("You must write a comment");
             }

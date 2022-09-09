@@ -20,11 +20,19 @@ namespace FinalProjectOfUnittest.Data.DAL
         //Read
         public TicketNotification Get(int id)
         {
-            return Context.TicketNotification.First(a => a.Id == id);
+            var ticketNotification = Context.TicketNotification
+              .Include(t => t.Ticket)
+              .Include(t => t.User)
+              .First(m => m.Id == id);
+            return ticketNotification;
         }
         public TicketNotification Get(Func<TicketNotification, bool> firstFuction)
         {
-            return Context.TicketNotification.First(firstFuction);
+            var ticketNotification = Context.TicketNotification
+              .Include(t => t.Ticket)
+              .Include(t => t.User)
+              .First(firstFuction);
+            return ticketNotification;
 
         }
         public ICollection<TicketNotification> GetAll()

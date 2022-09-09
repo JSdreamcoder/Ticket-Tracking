@@ -21,32 +21,40 @@ namespace FinalProjectOfUnittest.Controllers
         public TicketNotificationBLL noticebll;
         public AppUserBLL appUserBLL;
         public UserManager<AppUser> userManager;
+        
         public HomeController(ApplicationDbContext context, UserManager<AppUser> um)
         {
             projectBLL = new ProjectBLL(new ProjectDAL(context));
             noticebll = new TicketNotificationBLL(new TicketNotificationDAL(context));
             appUserBLL = new AppUserBLL(new AppUserDAL(context));
             userManager = um;
-        }   
+        }
       
+       
         public async Task<IActionResult> Index()
+        {
+            UpdateNoticeCount();
+            return View(projectBLL.GetAll().ToList());
+        }
+
+        public void UpdateNoticeCount()
         {
             var userName = User.Identity.Name;
             if (userName != null)
             {
                 var user = appUserBLL.Get(u => u.UserName == userName);
                 var userId = user.Id;
-               
-                var noticesByUser = noticebll.GetList(n => n.UserId == userId && n.Ticket.TicketStatus != TicketStatus.Completed);
-                ViewBag.NumOfNotices = noticesByUser.Count;
+
+                var noticesByUser = noticebll.GetList(n => n.UserId == userId && n.IsOpen == false);
+
+                GlobalValue.NoticeCount = noticesByUser.Count;
 
             }
-            
-            
-            return View(projectBLL.GetAll());
         }
 
-       
+
+    
+
         public IActionResult Privacy()
         {
             return View();

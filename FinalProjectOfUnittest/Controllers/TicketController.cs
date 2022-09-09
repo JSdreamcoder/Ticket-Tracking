@@ -12,6 +12,11 @@ using FinalProjectOfUnittest.Data.DAL;
 using Assignment_QnAWeb.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
+using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
+using System;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace FinalProjectOfUnittest.Controllers
 {
@@ -140,33 +145,45 @@ namespace FinalProjectOfUnittest.Controllers
         }
 
         // GET: Tickets/Details/5
-        public async Task<IActionResult> Details(int id)
+        public async Task<IActionResult> Details(int id,int? noticeId)
         {
+            
+
             if (id == null || ticketbll.GetAll() == null)
             {
                 return NotFound();
             }
-            
+
+            if (noticeId != null)
+            {
+                var notice = ticketNotificationbll.Get(notice => notice.Id == noticeId);
+                notice.IsOpen = true;
+                ticketNotificationbll.Update(notice);
+                ticketNotificationbll.Save();
+            }
+            //when visit link to detail from NoticeList page,need to update
+            UpdateNoticeCount();
+
             var ticket = ticketbll.GetAll()
                 .FirstOrDefault(m => m.Id == id);
-            var filePaths = new List<string>();
-            if(ticket.TicketAttachments != null)
-            {
-                filePaths = ticket.TicketAttachments.Select(t => t.FilePath).ToList();
-            }
+            //var filePaths = new List<string>();
+            //if(ticket.TicketAttachments != null)
+            //{
+            //    filePaths = ticket.TicketAttachments.Select(t => t.FilePath).ToList();
+            //}
            
-            List<string> fileNames = new List<string>();
-            foreach (var file in filePaths)
-            {
-                fileNames.Add(Path.GetFileName(file));
-            }
+            //List<string> fileNames = new List<string>();
+            //foreach (var file in ticket.TicketAttachments)
+            //{
+            //    fileNames.Add(file.FilePath);
+            //}
            
             if (ticket == null)
             {
                 return NotFound();
             }
-            var ticketAndfilePaths = new ViewModel(filePaths,fileNames ,ticket);
-            return View(ticketAndfilePaths);
+            //var ticketAndfilePaths = new ViewModel(fileNames ,ticket);
+            return View(ticket);
         }
         public IActionResult ViewHistory(int ticketid)
         {
@@ -180,10 +197,11 @@ namespace FinalProjectOfUnittest.Controllers
             ViewBag.TicketId = ticketid;
             return View(ticketLogItemBLL.GetById(ticketlogid));
         }
-        public FileResult Download(string filePath)
+        public FileResult Download(int attachmentId)
         {
-            byte[] fileBytes = System.IO.File.ReadAllBytes(filePath);
-            string fileName = Path.GetFileName(filePath);
+            var attachment = ticketAttachmentBLL.GetById(attachmentId);
+            byte[] fileBytes = attachment.file;
+            string fileName = attachment.FilePath;
             return File(fileBytes, System.Net.Mime.MediaTypeNames.Application.Octet, fileName);
         }
      
@@ -252,30 +270,29 @@ namespace FinalProjectOfUnittest.Controllers
                 ticketbll.Add(ticket);
                 ticketbll.Save();
 
-                //for File upload and thi is from Microsoft
+                //for File upload and this is from Microsoft
                 foreach (var formFile in files)
                 {
-                    string folderPath = Environment.CurrentDirectory + "\\UploadFiles\\";
-                   // folderPath = folderPath.Replace("\\", "/");
-                    string filePath = "";
-                    if (formFile.Length > 0)
-                    {
-                        filePath = Path.Combine(folderPath, Path.GetFileName(formFile.FileName));
 
-                        using (var stream = System.IO.File.Create(filePath))
+
+                    if (formFile.Length>0 && formFile.Length <300000)
+                    {
+
+                        //Create TicketAttachment
+                        var newAttachment = new TicketAttachment();
+                        newAttachment.FilePath = formFile.FileName;
+                        newAttachment.Created = DateTime.Now;
+                        newAttachment.UserId = ticket.OwnerUserId;
+                        newAttachment.TicketId = ticket.Id;
+                        using (var target = new MemoryStream())
                         {
-                            await formFile.CopyToAsync(stream);
+                            formFile.CopyTo(target);
+                            newAttachment.file = target.ToArray();
                         }
+                        ticketAttachmentBLL.Add(newAttachment);
+                        ticketAttachmentBLL.Save();
                     }
 
-                    //Create TicketAttachment
-                    var newAttachment = new TicketAttachment();
-                    newAttachment.FilePath = filePath;
-                    newAttachment.Created = DateTime.Now;
-                    newAttachment.UserId = ticket.OwnerUserId;
-                    newAttachment.TicketId = ticket.Id;
-                    ticketAttachmentBLL.Add(newAttachment);
-                    ticketAttachmentBLL.Save();
                 }
                 //End of file upload code
 
@@ -310,19 +327,20 @@ namespace FinalProjectOfUnittest.Controllers
                 var loginedUserName = User.Identity.Name;
                 var loginedUser = userbll.Get(u=>u.UserName == loginedUserName);
                 // divide Seleclist users depends on User Role
-                var SelecListUsers = new List<AppUser>();
+                var SelectListUsers = new List<AppUser>();
                 if (User.IsInRole("Administrator"))
                 {
-                    SelecListUsers = allusers.Except(AllSubmmiters).Where(u => u.Id != assignedUser.Id).ToList();
+                    SelectListUsers = allusers.Except(AllSubmmiters).Where(u => u.Id != assignedUser.Id).ToList();
 
                 }
                 else if (User.IsInRole("ProjectManager"))
                 {
-                    SelecListUsers = AllDeveloper.Where(u=>u.Id != assignedUser.Id).ToList(); 
+                    SelectListUsers = AllDeveloper.Where(u=>u.Id != assignedUser.Id).ToList(); 
                 }
 
-
-                    var selectlistOfUsers = new SelectList(SelecListUsers, "Id", "UserName");
+                var guest = userbll.GetUserbyId("df8353b4-9f11-4369-b2be-49725abb56d3");
+                if(guest.Id!=assignedUser.Id) SelectListUsers.Add(guest);
+                    var selectlistOfUsers = new SelectList(SelectListUsers, "Id", "UserName");
                
 
                 return View(selectlistOfUsers);
@@ -340,6 +358,7 @@ namespace FinalProjectOfUnittest.Controllers
         {
             try
             {
+                
                 //Getting Ticket
                 var ticket = ticketbll.GetById(ticketid);
 
@@ -356,6 +375,7 @@ namespace FinalProjectOfUnittest.Controllers
                 ticketHistory.Changed = NowTime; // .Value makes equal corecctly between nullable and non nullable 
                 ticketHistory.UserId = LoginedUser.Id;
                 ticketHistory.TicketId = ticketid;
+                ticketHistory.Changed = NowTime;
                 ticketHistoryBLL.Add(ticketHistory);
                 ticketHistoryBLL.Save();
 
@@ -380,13 +400,16 @@ namespace FinalProjectOfUnittest.Controllers
                 ticketbll.Update(ticket);
                 ticketbll.Save();
 
-                //Maing TicketNotification
+                //Making TicketNotification
                 var newNotification = new TicketNotification();
                 newNotification.TicketId = ticket.Id;
                 newNotification.UserId = userid;
+                newNotification.IsOpen = false;
                 ticketNotificationbll.Add(newNotification);
                 ticketNotificationbll.Save();
 
+                //Update Notice Count
+                UpdateNoticeCount();
                 
 
                 
@@ -400,8 +423,14 @@ namespace FinalProjectOfUnittest.Controllers
             return RedirectToAction("AssignTicketToUser", new {ticketid = ticketid, message = "Success"});
         }
         [HttpPost]
-        public async Task<IActionResult> CompleteTicket(int ticketid)
+        public async Task<IActionResult> CompleteTicket(int ticketid, int noticeId)
         {
+            //Change IsOpen to True
+            var notice = ticketNotificationbll.Get(notice => noticeId == notice.Id);
+            notice.IsOpen = true;
+            ticketNotificationbll.Update(notice);
+            ticketNotificationbll.Save();
+            UpdateNoticeCount();
             //Get Ticket
             var ticket = ticketbll.GetById(ticketid);
 
@@ -446,15 +475,19 @@ namespace FinalProjectOfUnittest.Controllers
             {
                 bool isProjectManager = await userManager.IsInRoleAsync(projectuser.User, "ProjectManager");
                 if (isProjectManager)
+                {
                     projectManager = projectuser.User;
+                    //Maing TicketNotification
+                    var newNotification = new TicketNotification();
+                    newNotification.TicketId = ticket.Id;
+                    newNotification.UserId = projectManager.Id;
+                    newNotification.IsOpen = false;
+                    ticketNotificationbll.Add(newNotification);
+                    ticketNotificationbll.Save();
+                    
+                }
+                   
             }
-
-            //Maing TicketNotification
-            var newNotification = new TicketNotification();
-            newNotification.TicketId = ticket.Id;
-            newNotification.UserId = projectManager.Id;
-            ticketNotificationbll.Add(newNotification);
-            ticketNotificationbll.Save();
             return RedirectToAction("Index", "TicketNotifications");
 
         }
@@ -555,7 +588,7 @@ namespace FinalProjectOfUnittest.Controllers
           
             
         }
-
+       
         //// GET: Tickets/Delete/5
         //public async Task<IActionResult> Delete(int? id)
         //{
@@ -634,6 +667,21 @@ namespace FinalProjectOfUnittest.Controllers
             }
 
             return ticket;
+        }
+
+        public void UpdateNoticeCount()
+        {
+            var userName = User.Identity.Name;
+            if (userName != null)
+            {
+                var user = userbll.Get(u => u.UserName == userName);
+                var userId = user.Id;
+
+                var noticesByUser = ticketNotificationbll.GetList(n => n.UserId == userId && n.IsOpen == false);
+
+                GlobalValue.NoticeCount = noticesByUser.Count;
+
+            }
         }
     }
 }

@@ -30,18 +30,20 @@
 </form>
 <hr />
 <form asp-action="Index" method="get">
-    <div >
+    <div style="margin-bottom:10px" >
        
         Filter by : <select name="type" asp-items="Html.GetEnumSelectList<TicketTypes>()"></select>
                  <select name="Priority" asp-items="Html.GetEnumSelectList<TicketPriorities>()" value=""></select>
-                 <select name="status" asp-items="Html.GetEnumSelectList<TicketStatus>()" value=""></select><br />
+                 <select name="status" asp-items="Html.GetEnumSelectList<TicketStatus>()" value=""></select>
+  </div>
+  <div>
                  Create Date From: <input type="date" name="fromdate" />
                  To: <input type="date" name="todate" />
                  
                  <input type="submit" value="Submit" class="btn btn-outline-success btn-sm" />
                  <input type="hidden" name="projectid" value=@ViewBag.ProjectId />
                  <input type="hidden" name="projectname" value=@ViewBag.ProjectName />
-    </div>
+  </div>
 </form>
 <hr />
 <form asp-action="Index" method="get">

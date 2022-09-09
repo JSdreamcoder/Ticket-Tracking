@@ -1,0 +1,23 @@
+﻿
+@{
+    var IsAdmin = User.IsInRole("Administrator");
+    var IsProjectManager = User.IsInRole("ProjectManager");
+    var IsDeveloper = User.IsInRole("Developer");
+    var IsSubmitter = User.IsInRole("Submitter");
+}
+
+ <div class="text-center">
+   
+     @if(IsAdmin||IsProjectManager||IsDeveloper)
+     {
+         @if(ViewBag.NumOfNotices >0)
+        {
+                    <a   class="btn btn-primary" role="button" asp-action="Index" asp-controller="TicketNotifications"><i class="bi bi-bell"></i>(@ViewBag.NumOfNotices)</a>
+        }else
+        {
+                    <a   class="btn btn-secondary" role="button" asp-action="Index" asp-controller="TicketNotifications"><i class="bi bi-bell"></i></a>
+        }
+
+     }
+  
+</div>

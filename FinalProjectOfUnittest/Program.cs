@@ -3,7 +3,11 @@ using FinalProjectOfUnittest.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
+
+
 var builder = WebApplication.CreateBuilder(args);
+
+var config = builder.Configuration;
 //var connectionString = builder.Configuration.GetConnectionString("ApplicationDbContextConnection") ?? throw new InvalidOperationException("Connection string 'ApplicationDbContextConnection' not found.");
 
 //builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -51,6 +55,13 @@ builder.Services.AddControllersWithViews();
 //   });
 
 
+builder.Services.AddAuthentication().AddGoogle(googleOptions =>
+{
+   
+    googleOptions.ClientId = "492938179244-im3rt4d39t4fujr4m22c2hf0ahngiffd.apps.googleusercontent.com";
+    googleOptions.ClientSecret = "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";
+});
+
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
@@ -70,6 +81,10 @@ else
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+
+
+
+
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();

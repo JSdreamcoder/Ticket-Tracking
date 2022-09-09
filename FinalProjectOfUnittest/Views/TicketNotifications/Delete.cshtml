@@ -11,17 +11,12 @@
     <h4>TicketNotification</h4>
     <hr />
     <dl class="row">
+       
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.User)
+            Assined Ticket Title
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.User.Id)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Ticket)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Ticket.Id)
+            @Html.DisplayFor(model => model.Ticket.Title)
         </dd>
     </dl>
     

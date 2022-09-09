@@ -14,7 +14,9 @@
             <th>
                 Assiged Ticket Title
             </th>
-            <th></th>
+            <th>Open</th>
+            <th>Complete</th>
+            <th>Delete</th>
         </tr>
     </thead>
     <tbody>
@@ -22,18 +24,32 @@
         <tr>
             
             <td>
-                <a asp-action="Details" asp-controller="Ticket" asp-route-id=@item.TicketId>@item.Ticket.Title</a>
+                <a asp-action="Details" asp-controller="Ticket" asp-route-id=@item.TicketId asp-route-noticeId=@item.Id>@item.Ticket.Title</a>
+            </td>
+            <td>
+                    @if (item.IsOpen == true)
+                    {
+                        <p>Open</p>
+                    }else{
+                        <p style="color:red">Not Open</p>
+                    }
             </td>
             <td>
               @if(item.Ticket.TicketStatus == TicketStatus.Assigned)
                     {
-                    <form method="post" asp-route-ticketid=@item.TicketId asp-controller="Ticket" asp-action="CompleteTicket">
+                    <form method="post" asp-route-ticketid=@item.TicketId asp-route-noticeId=@item.Id asp-controller="Ticket" asp-action="CompleteTicket">
                     <button type="submit">Complete</button>
                         </form>
 
                     }else if(item.Ticket.TicketStatus == TicketStatus.Completed)
                     {
                         <p>Completed</p>
+                    }
+                </td>
+                <td>
+                    @if (item.IsOpen == true)
+                    {
+                       <a asp-action="Delete" asp-route-id=@item.Id class="btn btn-danger small" >Delete</a>
                     }
                 </td>
         </tr>

@@ -13,13 +13,10 @@ namespace FinalProjectOfUnittest.Data.BLL
 
         public void Add(TicketHistory th)
         {
-            if (th.Id == 0)
+           
+            if (th.TicketId == 0)
             {
-                throw new ArgumentNullException("id cannot input 0");
-            }
-            else if (th.Ticket == null)
-            {
-                throw new ArgumentNullException("value of ticket cannot be null");
+                throw new ArgumentNullException("Ticket Id cannot be 0");
             }
             else
             {

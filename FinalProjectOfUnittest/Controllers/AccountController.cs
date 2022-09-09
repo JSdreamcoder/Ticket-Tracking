@@ -31,7 +31,7 @@ namespace FinalProjectOfUnittest.Controllers
             userbll.Update(user);
             userbll.Save();
             var apiKey = Environment.GetEnvironmentVariable("jaewonhw");
-            var client = new SendGridClient("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");
+            var client = new SendGridClient(apiKey);
             var from = new EmailAddress("JBZgroup@email.com", "TicketSupportCenter");
             var subject = "Confirm Email from JBZ";
             var to = new EmailAddress(email, "Example User");
@@ -60,7 +60,7 @@ namespace FinalProjectOfUnittest.Controllers
             }
             var url = $"https://localhost:7211/Account/RecoverPassword?email={email}";
             var apiKey = Environment.GetEnvironmentVariable("jaewonhw");
-            var client = new SendGridClient("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");
+            var client = new SendGridClient(apiKey);
             var from = new EmailAddress("JBZgroup@email.com", "TicketSupportCenter");
             var subject = "Recover Password of JBZ";
             var to = new EmailAddress(email, "Example User");

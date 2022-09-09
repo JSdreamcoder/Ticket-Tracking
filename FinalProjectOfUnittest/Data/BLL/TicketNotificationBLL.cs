@@ -13,13 +13,10 @@ namespace FinalProjectOfUnittest.Data.BLL
         }
         public void Add(TicketNotification entity)
         {
-            if (entity.Id == 0)
+            
+            if (entity.TicketId == 0)
             {
-                throw new ArgumentNullException("id cannot input 0");
-            }
-            else if (entity.Ticket == null)
-            {
-                throw new ArgumentNullException("value of ticket cannot be null");
+                throw new ArgumentNullException("ticketId cannot be 0");
             }
             else
             {
@@ -28,6 +25,7 @@ namespace FinalProjectOfUnittest.Data.BLL
         }
         public TicketNotification Get(Func<TicketNotification, bool> firstFuction)
         {
+
             return ticketNotificationDAL.Get(firstFuction);
         }
         public ICollection<TicketNotification> GetAll()
@@ -39,6 +37,11 @@ namespace FinalProjectOfUnittest.Data.BLL
             return ticketNotificationDAL.GetList(whereFuction);
         }
 
+        public void Remove(TicketNotification t)
+        {
+            
+            ticketNotificationDAL.Delete(t);
+        }
         public void Update(TicketNotification entity)
         {
             ticketNotificationDAL.Update(entity);

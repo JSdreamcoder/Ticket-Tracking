@@ -1,4 +1,4 @@
-﻿@model ViewModel
+﻿@model Ticket
 @{
     ViewData["Title"] = "Details";
     var isDeveloper = User.IsInRole("Developer");
@@ -13,13 +13,13 @@
     <h4>Ticket</h4>
     @if(isDeveloper || isAdmin || isProjectManager)
         {
-        <a asp-action="ViewHistory" asp-route-ticketid=@Model.ticket1.Id>Ticket History</a>
+        <a asp-action="ViewHistory" asp-route-ticketid=@Model.Id>Ticket History</a>
            
         }
     </div>
     <div>
-    <a asp-action="Edit" asp-route-id="@Model.ticket1?.Id">Edit Tikcet</a> |
-    <a asp-action="Index" asp-route-projectid=@Model.ticket1.Project.Id asp-route-projectname=@Model.ticket1.Project.Name>Back to List</a>
+    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit Tikcet</a> |
+    <a asp-action="Index" asp-route-projectid=@Model.Project.Id asp-route-projectname=@Model.Project.Name>Back to List</a>
 </div>
     <hr />
     <dl class="row">
@@ -27,62 +27,62 @@
             Title
         </dt>
         <dd class = "col-sm-10">
-            @Model.ticket1.Title
+            @Model.Title
         </dd>
         <dt class = "col-sm-2">
            Description
         </dt>
         <dd class = "col-sm-10">
-            @Model.ticket1.Description
+            @Model.Description
         </dd>
         <dt class = "col-sm-2">
             Created Date
         </dt>
         <dd class = "col-sm-10">
-            @Model.ticket1.Created
+            @Model.Created
         </dd>
         <dt class = "col-sm-2">
             Updated
         </dt>
         <dd class = "col-sm-10">
-            @Model.ticket1.Updated
+            @Model.Updated
         </dd>
         <dt class = "col-sm-2">
             Project
         </dt>
         <dd class = "col-sm-10">
-            @Model.ticket1.Project.Name
+            @Model.Project.Name
         </dd>
         <dt class = "col-sm-2">
             TicketType
         </dt>
         <dd class = "col-sm-10">
-            @Model.ticket1.TicketType
+            @Model.TicketType
         </dd>
         <dt class = "col-sm-2">
             TicketPriority
         </dt>
         <dd class = "col-sm-10">
-            @Model.ticket1.TicketPriority
+            @Model.TicketPriority
         </dd>
         <dt class = "col-sm-2">
             TicketStatus
         </dt>
         <dd class = "col-sm-10">
-            @Model.ticket1.TicketStatus
+            @Model.TicketStatus
         <dt class = "col-sm-2">
             Submitter
         </dt>
         <dd class = "col-sm-10">
-            @Model.ticket1.OwnerUser.UserName
+            @Model.OwnerUser.UserName
         </dd>
         <dt class = "col-sm-2">
             Assigned Developer
         </dt>
         <dd class = "col-sm-10">
-            @if(Model.ticket1.AssignedToUser != null)
+            @if(Model.AssignedToUser != null)
             {
-                @Model.ticket1.AssignedToUser.UserName    
+                @Model.AssignedToUser.UserName    
             }
             
         </dd>
@@ -94,9 +94,9 @@
                 @{
                     var i = 0;
                 }
-            @foreach(var path in Model.stringList)
+            @foreach(var attachment in Model.TicketAttachments)
             {
-                <a asp-action="Download"  class="btn btn-outline-info btn-sm" asp-route-filePath=@path>@Model.stringList2[i]</a>   
+                <a asp-action="Download"  class="btn btn-outline-info btn-sm" asp-route-attachmentId=@attachment.Id>@attachment.FilePath</a>   
                 i++;
             }
         </dd>
@@ -106,7 +106,7 @@
 
 <h4>Comment</h4>
 <hr />
-@foreach(var comment in Model.ticket1.TicketComments)
+@foreach(var comment in Model.TicketComments)
 {
   <p>
      @comment.Comment
@@ -121,7 +121,7 @@
   <hr />
 }
 
-<form asp-action="Create" asp-controller="TicketComments" asp-route-ticketid=@Model.ticket1.Id>
+<form asp-action="Create" asp-controller="TicketComments" asp-route-ticketid=@Model.Id>
     <textarea cols="50" name="comment" placeholder="Comment"></textarea></br>
     <button type="submit">Submit Comment</button>
 </form>

@@ -13,11 +13,8 @@ namespace FinalProjectOfUnittest.Data.BLL
 
         public void Add(ProjectUser u)
         {
-            if (u.Id == 0)
-            {
-                throw new ArgumentNullException("ID cannot be set as 0");
-            }
-            else if (u.UserId == null)
+            
+            if (u.UserId == null)
             {
                 throw new ArgumentNullException("ProjectID cannot be null");
             }

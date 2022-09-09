@@ -1,4 +1,4 @@
-﻿@model ICollection<Project>
+﻿@model List<Project>
 @{
     var IsAdmin = User.IsInRole("Administrator");
     var IsProjectManager = User.IsInRole("ProjectManager");
@@ -6,36 +6,26 @@
     var IsSubmitter = User.IsInRole("Submitter");
 }
 
-<div class="text-center">
-     @if(IsAdmin||IsProjectManager||IsDeveloper)
-     {
-         @if(ViewBag.NumOfNotices >0)
-        {
-                    <a   class="btn btn-primary" role="button" asp-action="Index" asp-controller="TicketNotifications">Notice(@ViewBag.NumOfNotices)</a>
-        }else
-        {
-                    <a   class="btn btn-secondary" role="button" asp-action="Index" asp-controller="TicketNotifications">Notice</a>
-        }
 
-     }
-</div>
 
 
 <div class="text-center">
    
-    <h1 >Welcome To JBZ(Glabal machine AI Group) Support.</h1>
-    <h1 >How Can we Help You?</h1>
+    <h1 >Welcome To Support Demo.</h1>
+   
 
     <ul style="list-style-type: none;">
 
     @foreach(var project in Model)
     {
-      <li style="color:red;font-size:50px"><a asp-route-projectid=@project.Id asp-route-projectname=@project.Name asp-action="Index" asp-controller="Ticket"  style="text-decoration:none">>>@project.Name</a></li>  
+      <li style="color:red;font-size:50px"><a asp-route-projectid=@project.Id asp-route-projectname=@project.Name asp-action="Index" asp-controller="Ticket"  style="text-decoration:none">>>Go to @project.Name Support List </a></li>  
     }
     </ul>
-
+  
+    <h1>Guest login in the login page can makes you explore all things<a></a></h1>
 </div>
 
 @*<form method="post" asp-controller="Mail" asp-action="sendMail">
     <button type="submit">Email</button>
 </form>*@
+
